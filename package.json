@@ -1,0 +1,32 @@
+{
+  "name": "hpictionary",
+  "version": "1.0.0",
+  "description": "Pictionary, but for the HP.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JustinH11235/HPictionary.git"
+  },
+  "keywords": [
+    "pictionary"
+  ],
+  "author": "Justin Hinckley",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JustinH11235/HPictionary/issues"
+  },
+  "homepage": "https://github.com/JustinH11235/HPictionary#readme",
+  "dependencies": {
+    "canvas": "^2.6.1",
+    "ejs": "^3.1.3",
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}

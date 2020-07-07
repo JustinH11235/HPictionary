@@ -62,7 +62,7 @@ var gameInProgress = false;
 var numRounds;
 var curRound;
 var timeBetweenRounds = 3000;
-var timeBetweenTurns = 999999//60000;
+var timeBetweenTurns = 90000;
 var words;
 var players = {};
 /* Players object structure: key=socketid, value={username, score, hadTurn}; Access using players[socketid]

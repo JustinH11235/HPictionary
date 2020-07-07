@@ -56,10 +56,13 @@ const height = 300;
 const ctx = Canvas.createCanvas(width, height).getContext('2d');
 // Create a canvas array of 0's of correct size
 var canvas = new Array(width*height*4).fill(0);
+var timer;
 var curWord = '&nbsp';
 var gameInProgress = false;
 var numRounds;
 var curRound;
+var timeBetweenRounds = 3000;
+var timeBetweenTurns = 999999//60000;
 var words;
 var players = {};
 /* Players object structure: key=socketid, value={username, score, hadTurn}; Access using players[socketid]
@@ -122,7 +125,7 @@ io.on('connection', (socket) => {
 
     socket.on('new canvas', newArray => {
         // I think the decision is to make {canvas} store a normal JS array, to pass normal JS arrays thru socket.io, and only convert into Uint8ClampedArray and ImageData on client-side when needed
-        console.log(`got new canvas from ${socket.id}, current drawer: ${curDrawerID}`)
+        // console.log(`got new canvas from ${socket.id}, current drawer: ${curDrawerID}`)
         if (socket.id == curDrawerID) {
             canvas = newArray;
             // console.log(canvas)
@@ -180,6 +183,7 @@ function startGame() {
 function endGame() {
     io.emit('new word', '<b><u>Game Over!</u></b>');
     // Forcibly disconnect users from socket.io so that no information can transfer between clients and server
+    clearTimeout(timer);
     for (let id in io.sockets.connected) {
         io.sockets.connected[id].disconnect(true);
     }
@@ -227,7 +231,7 @@ function nextTurn() {
             console.log(`Round ${curRound} ended`);
 
             if (curRound < numRounds) {
-                setTimeout(nextRound, 5000);
+                timer = setTimeout(nextRound, timeBetweenRounds);
                 io.emit('new word', `<b>End of Round ${curRound}...</b>`);
             } else {
                 endGame();
@@ -235,7 +239,7 @@ function nextTurn() {
             return;
         } else {
             // If a player was found, start a new turn in 25s and tell players new word
-            setTimeout(nextTurn, 25000)
+            timer = setTimeout(nextTurn, timeBetweenTurns)
             if (words.length != 0) {
                 curWord = words.splice(randInt(0, words.length), 1);
                 for (let id in io.sockets.connected) {

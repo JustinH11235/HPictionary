@@ -21,10 +21,20 @@
     <div class="container1">
 
       <br>
-      <!--TODO: Don't display username at top, display the current drawer-->
       <h2 id="cur-word" style="color: #ea433b;"></h2>
       <br>
       <canvas id="canvas" style="border: 1px solid #ea433b"></canvas>
+      <br>
+      <input type="color" id="cur-color" value="#ea433b">
+      <input type="range" id="cur-width" min="1" max="100" value="5">
+      <br>
+      <svg id="color-history" width="142" height="25">
+        <rect id="color0" x="1" y="2.5" width="20" height="20" style="fill:#FFFFFF;stroke-width:1;stroke:rgb(0,0,0)"/>
+        <rect id="color1" x="31" y="2.5" width="20" height="20" style="fill:#FFFFFF;stroke-width:1;stroke:rgb(0,0,0)"/>
+        <rect id="color2" x="61" y="2.5" width="20" height="20" style="fill:#FFFFFF;stroke-width:1;stroke:rgb(0,0,0)"/>
+        <rect id="color3" x="91" y="2.5" width="20" height="20" style="fill:#FFFFFF;stroke-width:1;stroke:rgb(0,0,0)"/>
+        <rect id="color4" x="121" y="2.5" width="20" height="20" style="fill:#FFFFFF;stroke-width:1;stroke:rgb(0,0,0)"/>
+      </svg>
 
       <br><br>
       <p style="color: #ea433b;"><b><u>Username: <%= username %></u></b></p>

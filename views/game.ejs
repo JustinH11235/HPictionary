@@ -22,16 +22,23 @@
 
       <br>
       <!--TODO: Don't display username at top, display the current drawer-->
-      <h2 id="username" style="color: #ea433b;"><%= username %></h2>
+      <h2 id="cur-word" style="color: #ea433b;"></h2>
       <br>
       <canvas id="canvas" style="border: 1px solid #ea433b"></canvas>
 
       <br><br>
+      <p style="color: #ea433b;"><b><u>Username: <%= username %></u></b></p>
       <h2 style="color: #ea433b;"><b>Scoreboard</b></h2>
       <ul id="scoreboard" class="list-group list-group-flush">
       </ul>
 
     </div>
+
+    <script>
+      const USERNAME = '<%= username %>';
+      const CANVAS_WIDTH = <%= width %>;
+      const CANVAS_HEIGHT = <%= height %>;
+    </script>
 
     <script type="text/javascript" src="/static/js/game.js"></script>
 

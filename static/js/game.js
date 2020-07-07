@@ -1,73 +1,53 @@
 var socket = io();
-const USERNAME = document.getElementById('username').innerHTML;
-const CANVAS_WIDTH = 600;
-const CANVAS_HEIGHT = 200;
+socket.emit('init player', USERNAME);
 const canvas = document.getElementById('canvas');
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
 const ctx = canvas.getContext('2d');
+const curWord = document.getElementById('cur-word');
 
-// Testing
-// ctx.fillRect(0, 0, CANVAS_WIDTH/2, CANVAS_HEIGHT/2);
-// pixel_arr = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-// console.log(pixel_arr)
-// //
+var isDrawer = false;
 
-// Drawing Handler
+// position of mouse used for drawing by drawing handler
 var pos = { x: 0, y: 0 };
 
-canvas.addEventListener('mousemove', draw);
-canvas.addEventListener('mousedown', setPosAndDot);
-canvas.addEventListener('mouseup', sendCanvas);
-canvas.addEventListener('mouseenter', setPosition);
 
-function sendCanvas(e) {
-    var curCanvas = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    console.log(curCanvas)
-    socket.emit('new canvas', curCanvas);
-}
 
-function setPosition(e) {
-    pos.x = e.clientX - canvas.offsetLeft;
-    pos.y = e.clientY - canvas.offsetTop;
-}
+// Socket.io Message Handlers
 
-function setPosAndDot(e) {
-    pos.x = e.clientX - canvas.offsetLeft;
-    pos.y = e.clientY - canvas.offsetTop;
-    ctx.beginPath(); // begin
-    ctx.lineWidth = 5;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = '#c0392b';
-    ctx.moveTo(pos.x-1, pos.y-1); // from
-    ctx.lineTo(pos.x-1, pos.y-1); // to
-    ctx.stroke(); // draw it!
-}
+socket.on('disconnect', () => {
+    setTimeout(() => { window.location.replace('/') }, 5000);
+    console.log('Game Over!')
+});
 
-function draw(e) {
-    // mouse left button must be pressed
-    if (e.buttons !== 1) return;
-
-    ctx.beginPath(); // begin
-
-    ctx.lineWidth = 5;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = '#c0392b';
-
-    ctx.moveTo(pos.x, pos.y); // from
-    setPosition(e);
-    ctx.lineTo(pos.x, pos.y); // to
-
-    ctx.stroke(); // draw it!
-}
-// End Drawing Handler
-  
 socket.on('new canvas', newCanvas => {
-    // console.log('Tick took ' + (Date.now() - lastTime).toString() + ' milliseconds.');
-    // lastTime = Date.now();
-    // ### ONLY UPDATE IF I AM CURRENT DRAWER
-    ctx.putImageData(newCanvas, 0, 0);
-    // console.log('render() took ' + (Date.now() - lastTime).toString() + ' milliseconds.');
+    // Only update my canvas if I am Not current drawer
+    if (!isDrawer) {
+    console.log('got new canvas from server')
+    // console.log(newCanvas)
+    let newUInt8Arr = new Uint8ClampedArray(newCanvas)
+    // console.log(newUInt8Arr)
+    let newImageData = new ImageData(newUInt8Arr, CANVAS_WIDTH, CANVAS_HEIGHT)
+    // console.log(newImageData)
+    ctx.putImageData(newImageData, 0, 0);
+    } else {
+        console.log('ignored new canvas from server, am current drawer')
+    }
+});
+
+socket.on('new word', newWord => {
+    console.log('got new word')
+    curWord.innerHTML = newWord;
+});
+
+// Triggers when server tells client it is the new drawer
+socket.on('give drawer', () => {
+    isDrawer = true;
+});
+
+// Triggers when server tells client it is not the drawer any more
+socket.on('take drawer', () => {
+    isDrawer = false;
 });
   
 socket.on('scoreboard update', data => {
@@ -81,6 +61,75 @@ socket.on('scoreboard update', data => {
       scoreboard.appendChild(score);
     }
 });
+
+
+
+// Drawing Handler
+
+canvas.addEventListener('mousemove', draw);
+// Needed in case they just click and let go without moving
+canvas.addEventListener('mousedown', setPosAndDot);
+// May need to replace later with a timer so its more fluid
+document.addEventListener('mouseup', sendCanvas);
+// This makes sure it draws correctly when you start your line outside of the canvas
+canvas.addEventListener('mouseenter', setPosition);
+// This makes sure it still draws when you quickly move off of canvas
+canvas.addEventListener('mouseleave', draw);
+
+function sendCanvas(e) {
+    if (isDrawer) {
+        var curCanvas = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data;
+        socket.emit('new canvas', Array.from(curCanvas));
+    } else {
+        console.log('blocked sendCanvas')
+    }
+}
+
+function setPosition(e) {
+    if (isDrawer) {
+        pos.x = e.clientX - canvas.offsetLeft;
+        pos.y = e.clientY - canvas.offsetTop;
+    } else {
+        console.log('blocked SetPosition')
+    }
+}
+
+function setPosAndDot(e) {
+    if (isDrawer) {
+        setPosition(e);
+        ctx.beginPath(); // begin
+        ctx.lineWidth = 5;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#c0392b';
+        ctx.moveTo(pos.x-1, pos.y-1); // from
+        ctx.lineTo(pos.x-1, pos.y-1); // to
+        ctx.stroke(); // draw it!
+    } else {
+        console.log('blocked setPosAndDot')
+    }
+}
+
+function draw(e) {
+    if (isDrawer) {
+        // mouse left button must be pressed
+        if (e.buttons !== 1) return;
+
+        ctx.beginPath(); // begin
+
+        ctx.lineWidth = 5;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#c0392b';
+
+        ctx.moveTo(pos.x-1, pos.y-1); // from
+        setPosition(e);
+        ctx.lineTo(pos.x-1, pos.y-1); // to
+
+        ctx.stroke(); // draw it!
+    } else {
+        console.log('blocked draw')
+    }
+}
+// End Drawing Handler
   
 
 

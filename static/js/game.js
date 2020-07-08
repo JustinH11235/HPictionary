@@ -53,14 +53,8 @@ socket.on('new word', newWord => {
 socket.on('give drawer', () => {
     isDrawer = true;
     start = Date.now();
-    timer = setInterval(() => {
-        let timeLeft = TURN_TIME / 1000 - Math.floor((Date.now() - start) / 1000);
-        let minutesLeft = Math.floor(timeLeft / 60);
-        let secondsLeft = timeLeft % 60;
-        minutesLeft = minutesLeft < 10 ? '0'+minutesLeft : minutesLeft;
-        secondsLeft = secondsLeft < 10 ? '0'+secondsLeft : secondsLeft;
-        clock.innerHTML = `${minutesLeft}:${secondsLeft}`;
-    }, 1000);
+    updateClock();
+    timer = setInterval(updateClock, 1000);
 });
 
 // Triggers when server tells client it is not the drawer any more
@@ -89,9 +83,7 @@ socket.on('scoreboard update', data => {
 function updateColorHistory(color) {
     // Update colorHistory array
     if (colorHistory.includes(color)) {
-        if (colorHistory.indexOf(color) == 0) {
-            // This color is already in history but its also at the beginning
-        } else {
+        if (colorHistory.indexOf(color) != 0) {
             // This color is already in history but we should pull it to the front
             var removed = colorHistory.splice(colorHistory.indexOf(color), 1)[0];
             colorHistory.unshift(removed);
@@ -126,6 +118,15 @@ function rgbToHex(rgb) {
     if (g.length == 1) g = '0' + g;
     if (b.length == 1) b = '0' + b;
     return `#${r}${g}${b}`;
+}
+
+function updateClock() {
+    let timeLeft = TURN_TIME / 1000 - Math.floor((Date.now() - start) / 1000);
+    let minutesLeft = Math.floor(timeLeft / 60);
+    let secondsLeft = timeLeft % 60;
+    minutesLeft = minutesLeft < 10 ? '0'+minutesLeft : minutesLeft;
+    secondsLeft = secondsLeft < 10 ? '0'+secondsLeft : secondsLeft;
+    clock.innerHTML = `${minutesLeft}:${secondsLeft}`;
 }
 
 // End Helper Functions

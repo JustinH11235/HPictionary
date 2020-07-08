@@ -5,7 +5,9 @@ canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
 const ctx = canvas.getContext('2d');
 
+// HTML element getters
 const curWord = document.getElementById('cur-word');
+const clock = document.getElementById('clock');
 const curColor = document.getElementById('cur-color');
 const curWidth = document.getElementById('cur-width');
 const colorHistoryElems = [document.getElementById('color0'), document.getElementById('color1'), document.getElementById('color2'), document.getElementById('color3'), document.getElementById('color4')];
@@ -15,7 +17,10 @@ var isDrawer = false;
 // position of mouse used for drawing by drawing handler
 var pos = { x: 0, y: 0 };
 
-var colorHistory = ['#FFFFFF', '#FFFFFF', '#FFFFFF','#FFFFFF','#FFFFFF'];
+var colorHistory = ['rgb(0, 0, 0)', 'rgb(101, 47, 6)', 'rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'];
+
+var start;
+var timer;
 
 
 
@@ -47,11 +52,22 @@ socket.on('new word', newWord => {
 // Triggers when server tells client it is the new drawer
 socket.on('give drawer', () => {
     isDrawer = true;
+    start = Date.now();
+    timer = setInterval(() => {
+        let timeLeft = TURN_TIME / 1000 - Math.floor((Date.now() - start) / 1000);
+        let minutesLeft = Math.floor(timeLeft / 60);
+        let secondsLeft = timeLeft % 60;
+        minutesLeft = minutesLeft < 10 ? '0'+minutesLeft : minutesLeft;
+        secondsLeft = secondsLeft < 10 ? '0'+secondsLeft : secondsLeft;
+        clock.innerHTML = `${minutesLeft}:${secondsLeft}`;
+    }, 1000);
 });
 
 // Triggers when server tells client it is not the drawer any more
 socket.on('take drawer', () => {
     isDrawer = false;
+    clearInterval(timer);
+    clock.innerHTML = '&nbsp';
 });
   
 socket.on('scoreboard update', data => {
@@ -71,12 +87,15 @@ socket.on('scoreboard update', data => {
 // Helper Functions
 
 function updateColorHistory(color) {
-    console.log('This is after hex2rgb', color)
     // Update colorHistory array
     if (colorHistory.includes(color)) {
-        // This color is already in history but we should pull it to the front
-        var removed = colorHistory.splice(colorHistory.indexOf(color), 1)[0];
-        colorHistory.unshift(removed);
+        if (colorHistory.indexOf(color) == 0) {
+            // This color is already in history but its also at the beginning
+        } else {
+            // This color is already in history but we should pull it to the front
+            var removed = colorHistory.splice(colorHistory.indexOf(color), 1)[0];
+            colorHistory.unshift(removed);
+        }
     } else {
         // This is a new color so we should insert at front
         colorHistory.unshift(color);
@@ -85,16 +104,11 @@ function updateColorHistory(color) {
     // Update colorHistoryElems according to colorHistory
     for (let col = 0; col < colorHistory.length; ++col) {
         colorHistoryElems[col].style.fill = colorHistory[col];
-        if (col == 0) {
-            console.log('this is whats in history', colorHistoryElems[col].style.fill)
-        }
     }
 }
 
 function setColor(e) {
     var elemColor = e.target.style.fill;
-    console.log('setcolor: this is what update history receives', elemColor);
-    console.log('setcolor: this is what color picker is set to', rgbToHex(elemColor));
     curColor.value = rgbToHex(elemColor);
     updateColorHistory(elemColor);
 }
@@ -165,7 +179,7 @@ function setPosAndDotAndColorHistory(e) {
         ctx.moveTo(pos.x-1, pos.y-1); // from
         ctx.lineTo(pos.x-1, pos.y-1); // to
         ctx.stroke(); // draw it!
-        console.log('This is before hex2rgb', curColor.value)
+
         updateColorHistory(hexToRGB(curColor.value));
     }
 }

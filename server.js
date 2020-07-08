@@ -38,7 +38,8 @@ app.post('/', (req, res) => {
   res.render('game', {
     username: req.body.username,
     width: width,
-    height: height
+    height: height,
+    turnTime: timeBetweenTurns
   });
 });
 // End Routing Handlers
@@ -58,15 +59,15 @@ var timer;
 var curWord = '&nbsp';
 var gameInProgress = false;
 // *Should be set by Create Game eventually*
-var numRounds = 5;
+var numRounds;
 // *Should be set by Create Game eventually*
-var curRound = 0;
+var curRound;
 // *Should be set by Create Game eventually*
 var timeBetweenRounds = 3000;
 // *Should be set by Create Game eventually*
 var timeBetweenTurns = 90000;
 // *Should be set by Create Game eventually*
-var words = ['werewolf', 'buzz', 'tech tower', 'the sun', 'ramblin wreck'];
+var words;
 var players = {};
 /* Players object structure: key=socketid, value={username, score, hadTurn}; Access using players[socketid]
 {
@@ -176,6 +177,11 @@ function removeCurDrawer() {
 // This is the code we will use but we need to trigger it after someone has actually clicked start game after creating a game.
 function startGame() {
     gameInProgress = true;
+    words = ["Buzz", "Tech Trolley", "Honeycomb Showers", "Atlanta", "The Lion King", "Finding Nemo", "Tech Green", "Tech Tower", "Ramblin' Wreck", "Oar", "Drip", "Time Machine", "Think", "Lace", "Darts", "Avocado", "Bleach", "marker", "birthday cake", "jail", "seed", "wing", "violin", "electrical outlet", "pantry", "run", "bagpipe", "enter", "refrigerator", "hairbrush", "sunflower", "pen", "shallow", "thumb", "torch", "truck", "pinwheel"];
+    numRounds = 5;
+    curRound = 0;
+    timeBetweenRounds = 3000;
+    timeBetweenTurns = 90000;
     nextRound();
 }
 

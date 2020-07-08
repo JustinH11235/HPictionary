@@ -71,6 +71,7 @@ socket.on('scoreboard update', data => {
 // Helper Functions
 
 function updateColorHistory(color) {
+    console.log('This is after hex2rgb', color)
     // Update colorHistory array
     if (colorHistory.includes(color)) {
         // This color is already in history but we should pull it to the front
@@ -84,12 +85,16 @@ function updateColorHistory(color) {
     // Update colorHistoryElems according to colorHistory
     for (let col = 0; col < colorHistory.length; ++col) {
         colorHistoryElems[col].style.fill = colorHistory[col];
+        if (col == 0) {
+            console.log('this is whats in history', colorHistoryElems[col].style.fill)
+        }
     }
 }
 
 function setColor(e) {
     var elemColor = e.target.style.fill;
-    console.log(rgbToHex(elemColor));
+    console.log('setcolor: this is what update history receives', elemColor);
+    console.log('setcolor: this is what color picker is set to', rgbToHex(elemColor));
     curColor.value = rgbToHex(elemColor);
     updateColorHistory(elemColor);
 }
@@ -100,10 +105,13 @@ function hexToRGB(hex) {
 
 function rgbToHex(rgb) {
     rgb = rgb.split(',');
-    var r = parseInt(rgb[0].substring(4));
-    var g = parseInt(rgb[1]);
-    var b = parseInt(rgb[2]);
-    return `#${r.toString(16)}${g.toString(16)}${b.toString(16)}`;
+    var r = parseInt(rgb[0].substring(4)).toString(16);
+    var g = parseInt(rgb[1]).toString(16);
+    var b = parseInt(rgb[2]).toString(16);
+    if (r.length == 1) r = '0' + r;
+    if (g.length == 1) g = '0' + g;
+    if (b.length == 1) b = '0' + b;
+    return `#${rd}${g}${b}`;
 }
 
 // End Helper Functions
@@ -157,7 +165,7 @@ function setPosAndDotAndColorHistory(e) {
         ctx.moveTo(pos.x-1, pos.y-1); // from
         ctx.lineTo(pos.x-1, pos.y-1); // to
         ctx.stroke(); // draw it!
-
+        console.log('This is before hex2rgb', curColor.value)
         updateColorHistory(hexToRGB(curColor.value));
     }
 }

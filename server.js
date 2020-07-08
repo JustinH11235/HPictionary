@@ -23,8 +23,6 @@ app.use('/static', express.static(__dirname + '/static'));
 
 // Needed to use canvas methods in node without actually creating an html canvas
 const Canvas = require('canvas');
-const { start } = require('repl');
-
 
 
 
@@ -59,11 +57,16 @@ var canvas = new Array(width*height*4).fill(0);
 var timer;
 var curWord = '&nbsp';
 var gameInProgress = false;
-var numRounds;
-var curRound;
+// *Should be set by Create Game eventually*
+var numRounds = 5;
+// *Should be set by Create Game eventually*
+var curRound = 0;
+// *Should be set by Create Game eventually*
 var timeBetweenRounds = 3000;
+// *Should be set by Create Game eventually*
 var timeBetweenTurns = 90000;
-var words;
+// *Should be set by Create Game eventually*
+var words = ['werewolf', 'buzz', 'tech tower', 'the sun', 'ramblin wreck'];
 var players = {};
 /* Players object structure: key=socketid, value={username, score, hadTurn}; Access using players[socketid]
 {
@@ -128,7 +131,6 @@ io.on('connection', (socket) => {
         // console.log(`got new canvas from ${socket.id}, current drawer: ${curDrawerID}`)
         if (socket.id == curDrawerID) {
             canvas = newArray;
-            // console.log(canvas)
             // Send all players updated canvas arr
             io.emit('new canvas', canvas); // Goes to ALL players
         } else {
@@ -174,9 +176,6 @@ function removeCurDrawer() {
 // This is the code we will use but we need to trigger it after someone has actually clicked start game after creating a game.
 function startGame() {
     gameInProgress = true;
-    numRounds = 5;
-    curRound = 0;
-    words = ['werewolf', 'buzz', 'tech tower', 'the sun', 'ramblin wreck'];
     nextRound();
 }
 

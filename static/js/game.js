@@ -11,6 +11,7 @@ const curWord = document.getElementById('cur-word');
 const clock = document.getElementById('clock');
 const curColor = document.getElementById('cur-color');
 const curWidth = document.getElementById('cur-width');
+const eraser = document.getElementById('eraser');
 const colorHistoryElems = [document.getElementById('color0'), document.getElementById('color1'), document.getElementById('color2'), document.getElementById('color3'), document.getElementById('color4')];
 const chatBox = document.getElementById('chat-box');
 const chat = document.getElementById('chat');
@@ -120,20 +121,23 @@ function chatSend() {
 
 function updateColorHistory(color) {
     // Update colorHistory array
-    if (colorHistory.includes(color)) {
-        if (colorHistory.indexOf(color) != 0) {
-            // This color is already in history but we should pull it to the front
-            var removed = colorHistory.splice(colorHistory.indexOf(color), 1)[0];
-            colorHistory.unshift(removed);
+    if (color != 'rgb(255, 255, 255)') {
+        if (colorHistory.includes(color)) {
+            if (colorHistory.indexOf(color) != 0) {
+                // This color is already in history but we should pull it to the front
+                var removed = colorHistory.splice(colorHistory.indexOf(color), 1)[0];
+                colorHistory.unshift(removed);
+            }
+        } else {
+            // This is a new color so we should insert at front
+            colorHistory.unshift(color);
+            colorHistory.pop();
         }
-    } else {
-        // This is a new color so we should insert at front
-        colorHistory.unshift(color);
-        colorHistory.pop();
-    }
-    // Update colorHistoryElems according to colorHistory
-    for (let col = 0; col < colorHistory.length; ++col) {
-        colorHistoryElems[col].style.fill = colorHistory[col];
+
+        // Update colorHistoryElems according to colorHistory
+        for (let col = 0; col < colorHistory.length; ++col) {
+            colorHistoryElems[col].style.fill = colorHistory[col];
+        }
     }
 }
 
@@ -173,8 +177,10 @@ function updateClock() {
 
 // Event Listeners
 
+eraser.addEventListener('click', setColor);
+
 for (let elem = 0; elem < colorHistoryElems.length; ++elem) {
-    colorHistoryElems[elem].addEventListener("click", setColor); 
+    colorHistoryElems[elem].addEventListener('click', setColor); 
 }
 
 canvas.addEventListener('mousemove', draw);

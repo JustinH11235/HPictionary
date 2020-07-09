@@ -200,23 +200,29 @@ canvas.addEventListener('mouseleave', draw);
 // Drawing Handler
 
 setInterval(() => {
-    if (isDrawer && drawBuffer.length) {
-        if (drawBuffer.shift()) {
-            // This means we need to set a position
-            pos.x = drawBuffer.shift() - canvas.offsetLeft;
-            pos.y = drawBuffer.shift() - canvas.offsetTop;
-        } else {
-            // This means we need to draw a line from pos to given coords and set position to pos
-            ctx.beginPath(); // begin
-            ctx.lineWidth = curWidth.value;
-            ctx.strokeStyle = curColor.value;
+    if (isDrawer) {
+        // If person is currently the drawer
+        if (drawBuffer.length) {
+            if (drawBuffer.shift()) {
+                // This means we need to set a position
+                pos.x = drawBuffer.shift() - canvas.offsetLeft;
+                pos.y = drawBuffer.shift() - canvas.offsetTop;
+            } else {
+                // This means we need to draw a line from pos to given coords and set position to pos
+                ctx.beginPath(); // begin
+                ctx.lineWidth = curWidth.value;
+                ctx.strokeStyle = curColor.value;
 
-            ctx.moveTo(pos.x-1, pos.y-1); // from
-            pos.x = drawBuffer.shift() - canvas.offsetLeft;
-            pos.y = drawBuffer.shift() - canvas.offsetTop;
-            ctx.lineTo(pos.x-1, pos.y-1); // to
-            ctx.stroke(); // draw it!
+                ctx.moveTo(pos.x-1, pos.y-1); // from
+                pos.x = drawBuffer.shift() - canvas.offsetLeft;
+                pos.y = drawBuffer.shift() - canvas.offsetTop;
+                ctx.lineTo(pos.x-1, pos.y-1); // to
+                ctx.stroke(); // draw it!
+            }
         }
+    } else {
+        // Otherwise clear buffer
+        drawBuffer.length = 0;
     }
 }, 10);
 

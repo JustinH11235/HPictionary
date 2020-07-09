@@ -103,6 +103,10 @@ io.on('connection', (socket) => {
             hadTurn: false,
             guessedCorrectly: false
         };
+        
+        if (!gameInProgress) {
+            startGame(); // TEMPORARY UNTIL WE IMPLEMENT CREATE GAME
+        }
 
         // Needed to make sure players who connect mid-game have an updated canvas, scoreboard, time, and current word
         socket.emit('new canvas', canvas);
@@ -115,9 +119,6 @@ io.on('connection', (socket) => {
         }
 
         console.log(players[socket.id])
-        if (!gameInProgress) {
-            startGame(); // TEMPORARY UNTIL WE IMPLEMENT CREATE GAME
-        }
     });
 
     socket.on('disconnect', () => {
@@ -228,6 +229,8 @@ function startGame() {
     numRounds = 5;
     curRound = 0;
     turnTime = 90000;
+    curTime = null;
+    curDrawerID = null;
     io.emit('new word', `<b>Game Starting...</b>`);
     timer = setTimeout(nextRound, timeBeforeGame);
 }

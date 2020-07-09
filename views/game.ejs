@@ -21,7 +21,7 @@
     <div class="container1">
 
       <br>
-      <h2 id="cur-word" style="color: #ea433b;"></h2>
+      <h2 id="cur-word" style="color: #ea433b;">&nbsp</h2>
       <br>
       <h4 id="clock" style="color: #ea433b;">&nbsp</h4>
       <br>
@@ -41,9 +41,25 @@
 
       <br><br>
       <p style="color: #ea433b;"><b><u>Username: <%= username %></u></b></p>
-      <h2 style="color: #ea433b;"><b>Scoreboard</b></h2>
+
+      <h4 style="color: #ea433b;"><b>Scoreboard</b></h4>
       <ul id="scoreboard" class="list-group list-group-flush">
       </ul>
+
+      <div class="container-chat">
+        <h4 style="color: #ea433b;"><b>Chat</b></h4>
+        <ul id="chat">
+        </ul>
+
+        <form onsubmit="return chatSend()">
+          <p>
+              <input type="text" id="chat-box" placeholder="Your guess" autocomplete="off"/>
+          </p>
+          <p>
+              <button type="submit" class="btn btn-primary">Guess</button>
+          </p>
+        </form>
+      </div>
 
     </div>
 

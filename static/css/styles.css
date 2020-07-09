@@ -11,7 +11,7 @@ div.container1
 
 }
 
-div.container1 form
+/* div.container1 form
 {
   margin: 0;
   position: absolute;
@@ -19,9 +19,9 @@ div.container1 form
   left: 50%;
   margin-right: -50%;
   transform: translate(-50%, -50%)
-}
+} */
 
-div.container1 button
+/* div.container1 button
 {
   margin: 0;
   position: absolute;
@@ -29,11 +29,41 @@ div.container1 button
   left: 50%;
   margin-right: -50%;
   transform: translate(-50%, -20%)
-}
+} */
 
 div.container1 ul.list-group.list-group-flush
 {
   width: 45%;
-  margin-left:auto;
-  margin-right:auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div.container-chat
+{
+  height: 10em;
+  margin: 0;
+  position: absolute;
+  top: 115%;
+  left: 85%;
+  margin-right: -50%;
+  transform: translate(-50%, -20%)
+}
+
+ul#chat
+{
+  overflow: auto;
+  width: 90%;
+  height: 10em;
+  margin: 1em 0;
+  padding: 0 3px; 
+  list-style: none;
+  border: 1px solid gray;
+  text-align: left;
+  margin-left: auto;
+  margin-right: auto;
+}
+ul#chat li
+{
+  margin: 0.35em 0;
+  padding: 0;
 }

@@ -59,16 +59,15 @@ var timer;
 var curTime;
 var curWord;
 var gameInProgress = false;
+const timeBeforeGame = 5000;
 // *Should be set by Create Game eventually*
 var numRounds;
-// *Should be set by Create Game eventually*
+// *Should be set by Create Game eventually to 0*
 var curRound;
 // *Should be set by Create Game eventually*
 var turnTime = 90000;
-// *Should be set by Create Game eventually*
-var timeBetweenRounds = 3000;
-// *Should be set by Create Game eventually*
-var timeBetweenTurns = 1000;
+const timeBetweenRounds = 3000;
+const timeBetweenTurns = 3000;
 // *Should be set by Create Game eventually*
 var words;
 var players = {};
@@ -157,13 +156,21 @@ io.on('connection', (socket) => {
                 socket.emit('new message', `<span style="color: green"><b>You:</b> ${curWord}</span>`); // Send word back to guesser
                 socket.broadcast.emit('new message', `<span style="color: green"><b>${players[socket.id].username}</b> guessed the word!</span>`); // Send another message to everyone else
                 players[socket.id].score += 100;
-                // let curScoreboard = [];
-                // for (let id in players) {
-                //     curScoreboard.push({username: players[id].username, score: players[id].score});
-                // }
                 io.emit('scoreboard update', getScoreboard().sort((a, b) => {
                     return b.score - a.score;
                 }));
+                let notAllCorrect = false;
+                for (let id in players) {
+                    if (id != curDrawerID && !players[id].guessedCorrectly) {
+                        notAllCorrect = true;
+                        break;
+                    }
+                }
+                if (!notAllCorrect && timer) {
+                    // If everyone has guessed correctly and the turn next turn hasn't started yet...
+                    clearTimeout(timer);
+                    nextTurn();
+                }
             } else {
                 // If the guess is not correct...
                 io.emit('new message', `<b>${players[socket.id].username}:</b> ${newMessage}`); // Send message to everyone
@@ -220,10 +227,9 @@ function startGame() {
     words = ["Buzz", "Tech Trolley", "Honeycomb Showers", "Atlanta", "The Lion King", "Finding Nemo", "Tech Green", "Tech Tower", "Ramblin' Wreck", "Oar", "Drip", "Time Machine", "Think", "Lace", "Darts", "Avocado", "Bleach", "marker", "birthday cake", "jail", "seed", "wing", "violin", "electrical outlet", "pantry", "run", "bagpipe", "enter", "refrigerator", "hairbrush", "sunflower", "pen", "shallow", "thumb", "torch", "truck", "pinwheel"];
     numRounds = 5;
     curRound = 0;
-    timeBetweenRounds = 3000;
     turnTime = 90000;
-    timeBetweenTurns = 1000;
-    nextRound();
+    io.emit('new word', `<b>Game Starting...</b>`);
+    timer = setTimeout(nextRound, timeBeforeGame);
 }
 
 function endGame() {
@@ -256,10 +262,8 @@ function nextTurn() {
     // Probably should make the game end if there's 1 player also but atm, its when there's none
     if (Object.keys(players).length != 0) {
         if (curDrawerID) {
-            io.emit('new word', `<b>End of ${players[curDrawerID].username}'s Turn...</b>`);
+            io.emit('new word', `<b>The Word Was ${curWord}!`);
             removeCurDrawer();
-        } else {
-            io.emit('new word', `<b>Game Starting...</b>`);
         }
         curWord = null;
         canvas.fill(0); // Clears canvas

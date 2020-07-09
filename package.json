@@ -2,7 +2,7 @@
   "name": "hpictionary",
   "version": "1.0.0",
   "description": "Pictionary, but for the HP.",
-  "main": "index.js",
+  "main": "server.js",
   "engines": {
     "node": "10.19.x"
   },

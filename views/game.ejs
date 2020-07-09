@@ -21,16 +21,45 @@
     <div class="container1">
 
       <br>
-      <!--TODO: Don't display username at top, display the current drawer-->
-      <h2 id="cur-word" style="color: #ea433b;"></h2>
+      <h2 id="cur-word" style="color: #ea433b;">&nbsp</h2>
+      <br>
+      <h4 id="clock" style="color: #ea433b;">&nbsp</h4>
       <br>
       <canvas id="canvas" style="border: 1px solid #ea433b"></canvas>
+      <br>
+      <input type="color" id="cur-color" value="#000000">
+      <input type="range" id="cur-width" min="1" max="100" value="5">
+      <br>
+      <!--Put eraser here..., maybe just white box with an svg drawn red line thru diagonal?-->
+      <svg id="color-history" width="142" height="25">
+        <rect id="color0" x="1" y="2.5" width="20" height="20" style="fill:#000000;stroke-width:1;stroke:rgb(0,0,0)"/>
+        <rect id="color1" x="31" y="2.5" width="20" height="20" style="fill:#652F06;stroke-width:1;stroke:rgb(0,0,0)"/>
+        <rect id="color2" x="61" y="2.5" width="20" height="20" style="fill:#FF0000;stroke-width:1;stroke:rgb(0,0,0)"/>
+        <rect id="color3" x="91" y="2.5" width="20" height="20" style="fill:#00FF00;stroke-width:1;stroke:rgb(0,0,0)"/>
+        <rect id="color4" x="121" y="2.5" width="20" height="20" style="fill:#0000FF;stroke-width:1;stroke:rgb(0,0,0)"/>
+      </svg>
 
       <br><br>
       <p style="color: #ea433b;"><b><u>Username: <%= username %></u></b></p>
-      <h2 style="color: #ea433b;"><b>Scoreboard</b></h2>
+
+      <h4 style="color: #ea433b;"><b>Scoreboard</b></h4>
       <ul id="scoreboard" class="list-group list-group-flush">
       </ul>
+
+      <div class="container-chat">
+        <h4 style="color: #ea433b;"><b>Chat</b></h4>
+        <ul id="chat">
+        </ul>
+
+        <form onsubmit="return chatSend()">
+          <p>
+              <input type="text" id="chat-box" placeholder="Your guess" autocomplete="off"/>
+          </p>
+          <p>
+              <button type="submit" class="btn btn-primary">Guess</button>
+          </p>
+        </form>
+      </div>
 
     </div>
 
@@ -38,6 +67,7 @@
       const USERNAME = '<%= username %>';
       const CANVAS_WIDTH = <%= width %>;
       const CANVAS_HEIGHT = <%= height %>;
+      const TURN_TIME = <%= turnTime %>;
     </script>
 
     <script type="text/javascript" src="/static/js/game.js"></script>

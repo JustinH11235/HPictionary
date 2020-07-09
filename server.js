@@ -10,7 +10,10 @@ const app = express();
 const http = require('http').Server(app);
 const server = http.listen(PORT, () => console.log('server is running on port', server.address().port));
 // Create a variable {io} used to access methods of socket.io which is connected to the http server
-const io = socketIO(http);
+const io = socketIO(http, {
+    pingInterval: 2000, // How many ms before the client sends a new ping packet
+    pingTimeout: 60000 // How many ms without a pong packet to consider the connection closed.
+});
 
 // Setup bodyParser
 app.use(bodyParser.json());
@@ -20,10 +23,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
 // Use static folder for .js files
 app.use('/static', express.static(__dirname + '/static'));
-
-// Needed to use canvas methods in node without actually creating an html canvas
-const Canvas = require('canvas');
-
 
 
 
@@ -52,7 +51,6 @@ app.post('/', (req, res) => {
 
 const width = 400;
 const height = 300;
-const ctx = Canvas.createCanvas(width, height).getContext('2d');
 // Create a canvas array of 0's of correct size
 var canvas = new Array(width*height*4).fill(0);
 var timer;

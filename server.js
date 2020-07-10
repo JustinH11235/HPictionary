@@ -222,6 +222,7 @@ function getScoreboard() {
 // This is the code we will use but we need to trigger it after someone has actually clicked start game after creating a game.
 function startGame() {
     gameInProgress = true;
+    canvas.fill(0); // Clears canvas
     words = ["Buzz", "Tech Trolley", "Honeycomb Showers", "Atlanta", "The Lion King", "Finding Nemo", "Tech Green", "Tech Tower", "Ramblin' Wreck", "Oar", "Drip", "Time Machine", "Think", "Lace", "Darts", "Avocado", "Bleach", "marker", "birthday cake", "jail", "seed", "wing", "violin", "electrical outlet", "pantry", "run", "bagpipe", "enter", "refrigerator", "hairbrush", "sunflower", "pen", "shallow", "thumb", "torch", "truck", "pinwheel"];
     numRounds = 5;
     curRound = 0;

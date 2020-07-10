@@ -11,6 +11,7 @@ const curWord = document.getElementById('cur-word');
 const clock = document.getElementById('clock');
 const curColor = document.getElementById('cur-color');
 const curWidth = document.getElementById('cur-width');
+const clearCanvas = document.getElementById('clear-canvas');  // Button to clear canvas
 const eraser = document.getElementById('eraser');
 const colorHistoryElems = [document.getElementById('color0'), document.getElementById('color1'), document.getElementById('color2'), document.getElementById('color3'), document.getElementById('color4')];
 const chatBox = document.getElementById('chat-box');
@@ -50,6 +51,14 @@ socket.on('new canvas', newCanvas => {
     let newImageData = new ImageData(newUInt8Arr, CANVAS_WIDTH, CANVAS_HEIGHT)
     // console.log(newImageData)
     ctx.putImageData(newImageData, 0, 0);
+});
+
+// Triggers when drawer clicks on "clear Canvas"
+socket.on('blank canvas', () => {
+    console.log("make canvas blank");
+    // Need code to make canvas blank here
+    //
+    //
 });
 
 socket.on('new word', newWord => {
@@ -176,6 +185,12 @@ function updateClock() {
 
 
 // Event Listeners
+
+clearCanvas.addEventListener('click', () => {
+    if(isDrawer) {
+        socket.emit('blank canvas');
+    }
+}); 
 
 eraser.addEventListener('click', setColor);
 

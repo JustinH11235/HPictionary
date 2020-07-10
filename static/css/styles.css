@@ -67,3 +67,17 @@ ul#chat li
   margin: 0.35em 0;
   padding: 0;
 }
+
+#clear-canvas {
+  background-color: rgb(218, 86, 86);
+  width: 120px;
+  border: none;
+  color: white;
+  padding: 3px 4px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 10px;
+  margin: 2px 2px;
+  cursor: pointer;
+}

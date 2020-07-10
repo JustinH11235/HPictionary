@@ -177,6 +177,11 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('blank canvas', () => {
+        if(socket.id == curDrawerID) {
+            socket.emit('blank canvas');
+        }
+    });
     //EMPTY SPACE FOR NEW SOCKET HANDLER
 
 });

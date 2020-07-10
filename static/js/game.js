@@ -56,10 +56,9 @@ socket.on('new canvas', newCanvas => {
 // Triggers when drawer clicks on "clear Canvas"
 socket.on('blank canvas', () => {
     console.log("make canvas blank");
-    // Need code to make canvas blank here
     let blankCanvas = new Array(CANVAS_HEIGHT*CANVAS_WIDTH*4).fill(0);
     let newUInt8Arr = new Uint8ClampedArray(blankCanvas);
-    let newImageData = new ImageData(newUInt8Arr, CANVAS_WIDTH, CANVAS_HEIGHT)
+    let newImageData = new ImageData(newUInt8Arr, CANVAS_WIDTH, CANVAS_HEIGHT);
     ctx.putImageData(newImageData, 0, 0);
     //
 });

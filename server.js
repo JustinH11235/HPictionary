@@ -176,7 +176,6 @@ io.on('connection', (socket) => {
             }
         }
     });
-
     //EMPTY SPACE FOR NEW SOCKET HANDLER
 
 });

@@ -11,6 +11,7 @@ const curWord = document.getElementById('cur-word');
 const clock = document.getElementById('clock');
 const curColor = document.getElementById('cur-color');
 const curWidth = document.getElementById('cur-width');
+const clearCanvas = document.getElementById('clear-canvas');  // Button to clear canvas
 const eraser = document.getElementById('eraser');
 const colorHistoryElems = [document.getElementById('color0'), document.getElementById('color1'), document.getElementById('color2'), document.getElementById('color3'), document.getElementById('color4')];
 const chatBox = document.getElementById('chat-box');
@@ -176,6 +177,16 @@ function updateClock() {
 
 
 // Event Listeners
+
+clearCanvas.addEventListener('click', () => {
+    if(isDrawer) {
+        let blankCanvas = new Array(CANVAS_HEIGHT*CANVAS_WIDTH*4).fill(0);
+        let newUInt8Arr = new Uint8ClampedArray(blankCanvas);
+        let newImageData = new ImageData(newUInt8Arr, CANVAS_WIDTH, CANVAS_HEIGHT)
+        ctx.putImageData(newImageData, 0, 0);
+        socket.broadcast.emit('new canvas', newCanvas);
+    }
+}); 
 
 eraser.addEventListener('click', setColor);
 

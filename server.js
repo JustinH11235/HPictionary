@@ -10,7 +10,10 @@ const app = express();
 const http = require('http').Server(app);
 const server = http.listen(PORT, () => console.log('server is running on port', server.address().port));
 // Create a variable {io} used to access methods of socket.io which is connected to the http server
-const io = socketIO(http);
+const io = socketIO(http, {
+    pingInterval: 2000, // How many ms before the client sends a new ping packet
+    pingTimeout: 60000 // How many ms without a pong packet to consider the connection closed.
+});
 
 // Setup bodyParser
 app.use(bodyParser.json());
@@ -20,10 +23,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
 // Use static folder for .js files
 app.use('/static', express.static(__dirname + '/static'));
-
-// Needed to use canvas methods in node without actually creating an html canvas
-const Canvas = require('canvas');
-
 
 
 
@@ -52,23 +51,21 @@ app.post('/', (req, res) => {
 
 const width = 400;
 const height = 300;
-const ctx = Canvas.createCanvas(width, height).getContext('2d');
 // Create a canvas array of 0's of correct size
 var canvas = new Array(width*height*4).fill(0);
 var timer;
 var curTime;
 var curWord;
 var gameInProgress = false;
+const timeBeforeGame = 5000;
 // *Should be set by Create Game eventually*
 var numRounds;
-// *Should be set by Create Game eventually*
+// *Should be set by Create Game eventually to 0*
 var curRound;
 // *Should be set by Create Game eventually*
 var turnTime = 90000;
-// *Should be set by Create Game eventually*
-var timeBetweenRounds = 3000;
-// *Should be set by Create Game eventually*
-var timeBetweenTurns = 1000;
+const timeBetweenRounds = 3000;
+const timeBetweenTurns = 3000;
 // *Should be set by Create Game eventually*
 var words;
 var players = {};
@@ -104,6 +101,10 @@ io.on('connection', (socket) => {
             hadTurn: false,
             guessedCorrectly: false
         };
+        
+        if (!gameInProgress) {
+            startGame(); // TEMPORARY UNTIL WE IMPLEMENT CREATE GAME
+        }
 
         // Needed to make sure players who connect mid-game have an updated canvas, scoreboard, time, and current word
         socket.emit('new canvas', canvas);
@@ -116,9 +117,6 @@ io.on('connection', (socket) => {
         }
 
         console.log(players[socket.id])
-        if (!gameInProgress) {
-            startGame(); // TEMPORARY UNTIL WE IMPLEMENT CREATE GAME
-        }
     });
 
     socket.on('disconnect', () => {
@@ -157,13 +155,21 @@ io.on('connection', (socket) => {
                 socket.emit('new message', `<span style="color: green"><b>You:</b> ${curWord}</span>`); // Send word back to guesser
                 socket.broadcast.emit('new message', `<span style="color: green"><b>${players[socket.id].username}</b> guessed the word!</span>`); // Send another message to everyone else
                 players[socket.id].score += 100;
-                // let curScoreboard = [];
-                // for (let id in players) {
-                //     curScoreboard.push({username: players[id].username, score: players[id].score});
-                // }
                 io.emit('scoreboard update', getScoreboard().sort((a, b) => {
                     return b.score - a.score;
                 }));
+                let notAllCorrect = false;
+                for (let id in players) {
+                    if (id != curDrawerID && !players[id].guessedCorrectly) {
+                        notAllCorrect = true;
+                        break;
+                    }
+                }
+                if (!notAllCorrect && timer) {
+                    // If everyone has guessed correctly and the turn next turn hasn't started yet...
+                    clearTimeout(timer);
+                    nextTurn();
+                }
             } else {
                 // If the guess is not correct...
                 io.emit('new message', `<b>${players[socket.id].username}:</b> ${newMessage}`); // Send message to everyone
@@ -220,10 +226,11 @@ function startGame() {
     words = ["Buzz", "Tech Trolley", "Honeycomb Showers", "Atlanta", "The Lion King", "Finding Nemo", "Tech Green", "Tech Tower", "Ramblin' Wreck", "Oar", "Drip", "Time Machine", "Think", "Lace", "Darts", "Avocado", "Bleach", "marker", "birthday cake", "jail", "seed", "wing", "violin", "electrical outlet", "pantry", "run", "bagpipe", "enter", "refrigerator", "hairbrush", "sunflower", "pen", "shallow", "thumb", "torch", "truck", "pinwheel"];
     numRounds = 5;
     curRound = 0;
-    timeBetweenRounds = 3000;
     turnTime = 90000;
-    timeBetweenTurns = 1000;
-    nextRound();
+    curTime = null;
+    curDrawerID = null;
+    io.emit('new word', `<b>Game Starting...</b>`);
+    timer = setTimeout(nextRound, timeBeforeGame);
 }
 
 function endGame() {
@@ -256,10 +263,8 @@ function nextTurn() {
     // Probably should make the game end if there's 1 player also but atm, its when there's none
     if (Object.keys(players).length != 0) {
         if (curDrawerID) {
-            io.emit('new word', `<b>End of ${players[curDrawerID].username}'s Turn...</b>`);
+            io.emit('new word', `<b>The Word Was ${curWord}!`);
             removeCurDrawer();
-        } else {
-            io.emit('new word', `<b>Game Starting...</b>`);
         }
         curWord = null;
         canvas.fill(0); // Clears canvas

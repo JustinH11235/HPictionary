@@ -294,7 +294,8 @@ function penDown(e) {
         // Mouse click
         drawBuffer.push('pos', e.offsetX, e.offsetY, 'line', e.offsetX, e.offsetY); // setPosition and dot
         // Set interval to send canvas every 250 ms
-        drawBuffer.push('setInterval');
+        // drawBuffer.push('setInterval');
+        timerSendCanvas = setInterval(sendCanvas, 250)
     } else {
         // Mobile Touch
         var touch = e.touches[0];
@@ -311,7 +312,8 @@ function penDown(e) {
 
 function penUp(e) {
     // Remove interval that sends canvas since we aren't drawing anymore
-    drawBuffer.push('clearInterval')
+    // drawBuffer.push('clearInterval')
+    clearInterval(timerSendCanvas);
 
 }
 

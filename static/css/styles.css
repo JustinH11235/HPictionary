@@ -70,6 +70,17 @@ ul#chat li
 
 #clear-canvas {
   background-color: rgb(218, 86, 86);
+}
+
+#flood-fill-bucket {
+  background-color: rgb(29, 51, 142);
+}
+
+#pencil-tool {
+  background-color: rgb(88, 41, 182);
+}
+
+.buttons {
   width: 120px;
   border: none;
   color: white;

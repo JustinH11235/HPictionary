@@ -218,8 +218,6 @@ setInterval(() => {
         if (drawBuffer.length) {
             if (drawBuffer.shift()) {
                 // This means we need to set a position
-//                 pos.x = drawBuffer.shift() - canvas.offsetLeft;
-//                 pos.y = drawBuffer.shift() - canvas.offsetTop;
                 pos.x = drawBuffer.shift();
                 pos.y = drawBuffer.shift();
             } else {
@@ -229,8 +227,7 @@ setInterval(() => {
                 ctx.strokeStyle = curColor.value;
 
                 ctx.moveTo(pos.x-1, pos.y-1); // from
-//                 pos.x = drawBuffer.shift() - canvas.offsetLeft;
-//                 pos.y = drawBuffer.shift() - canvas.offsetTop;
+                
                 pos.x = drawBuffer.shift();
                 pos.y = drawBuffer.shift();
                 ctx.lineTo(pos.x-1, pos.y-1); // to
@@ -251,12 +248,10 @@ function sendCanvas(e) {
 }
 
 function setPosition(e) {
-//     drawBuffer.push(true, e.clientX, e.clientY); // setPosition
     drawBuffer.push(true, e.offsetX, e.offsetY); // setPosition
 }
 
 function setPosAndDotAndColorHistory(e) {
-//     drawBuffer.push(true, e.clientX, e.clientY, false, e.clientX, e.clientY); // setPosition and dot
     drawBuffer.push(true, e.offsetX, e.offsetY, false, e.offsetX, e.offsetY); // setPosition and dot
 
     if (isDrawer) {
@@ -268,7 +263,6 @@ function draw(e) {
     // mouse left button must be pressed
     if (e.buttons !== 1) return;
 
-//     drawBuffer.push(false, e.clientX, e.clientY); // Line
     drawBuffer.push(false, e.offsetX, e.offsetY); // Line
 }
 

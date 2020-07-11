@@ -293,7 +293,7 @@ function penDown(e) {
         e.preventDefault();
     }
     // Set interval to send canvas every 50 ms
-    timerSendCanvas = setInterval(sendCanvas, 50);
+    timerSendCanvas = setInterval(sendCanvas, 100);
 
     if (isDrawer) {
         updateColorHistory(hexToRGB(curColor.value));

@@ -314,6 +314,8 @@ function penUp(e) {
     // Remove interval that sends canvas since we aren't drawing anymore
     // drawBuffer.push('clearInterval')
     clearInterval(timerSendCanvas);
+    // Send final state of line
+    sendCanvas();
 
 }
 

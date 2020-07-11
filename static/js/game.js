@@ -291,9 +291,9 @@ function penDown(e) {
         touchY = touch.pageY - touch.target.offsetTop;
         drawBuffer.push(true, touchX, touchY, false, touchX, touchY); // setPosition and dot
         e.preventDefault();
+        // Set interval to send canvas every 50 ms
+        timerSendCanvas = setInterval(sendCanvas, 75);
     }
-    // Set interval to send canvas every 50 ms
-    timerSendCanvas = setInterval(sendCanvas, 75);
 
     if (isDrawer) {
         updateColorHistory(hexToRGB(curColor.value));

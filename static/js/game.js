@@ -206,6 +206,11 @@ canvas.addEventListener('mouseenter', setPosition);
 // This makes sure it still draws when you quickly move off of canvas
 canvas.addEventListener('mouseleave', draw);
 
+// Mobile Draw Event Listeners
+canvas.addEventListener('touchstart', setPosAndDotAndColorHistory);
+canvas.addEventListener('touchend', sendCanvas);
+canvas.addEventListener('touchmove', draw);
+
 // End Event Listeners
 
 
@@ -252,7 +257,17 @@ function setPosition(e) {
 }
 
 function setPosAndDotAndColorHistory(e) {
-    drawBuffer.push(true, e.offsetX, e.offsetY, false, e.offsetX, e.offsetY); // setPosition and dot
+    if (!e.touches) {
+        // Mouse click
+        drawBuffer.push(true, e.offsetX, e.offsetY, false, e.offsetX, e.offsetY); // setPosition and dot
+    } else {
+        // Mobile Touch
+        var touch = e.touches[0];
+        touchX = touch.pageX - touch.target.offsetLeft;
+        touchY = touch.pageY - touch.target.offsetTop;
+        drawBuffer.push(true, touchX, touchY, false, touchX, touchY); // setPosition and dot
+        e.preventDefault();
+    }
 
     if (isDrawer) {
         updateColorHistory(hexToRGB(curColor.value));
@@ -260,10 +275,20 @@ function setPosAndDotAndColorHistory(e) {
 }
 
 function draw(e) {
-    // mouse left button must be pressed
-    if (e.buttons !== 1) return;
+    if (!e.touches) {
+        // Mouse draw
+        // mouse left button must be pressed
+        if (e.buttons !== 1) return;
 
-    drawBuffer.push(false, e.offsetX, e.offsetY); // Line
+        drawBuffer.push(false, e.offsetX, e.offsetY); // Line
+    } else {
+        // Mobile draw
+        var touch = e.touches[0];
+        touchX = touch.pageX - touch.target.offsetLeft;
+        touchY = touch.pageY - touch.target.offsetTop;
+        drawBuffer.push(false, touchX, touchY); // Line
+        e.preventDefault();
+    }
 }
 
 // End Drawing Handler

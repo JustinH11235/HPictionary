@@ -33,7 +33,8 @@ var pos = { x: 0, y: 0 };
 var colorHistory = ['rgb(0, 0, 0)', 'rgb(101, 47, 6)', 'rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'];
 
 var start;
-var timer;
+var timerClock;
+var timerSendCanvas;
 
 // Buffer to speed up draw() event handler
 var drawBuffer = [];
@@ -45,7 +46,7 @@ var drawBuffer = [];
 socket.on('disconnect', () => {
     setTimeout(() => { window.location.replace('/') }, 5000);
     curWord.innerHTML = '<b><u>Game Over!</u></b>';
-    clearInterval(timer);
+    clearInterval(timerClock);
     clock.innerHTML = '&nbsp';
     console.log('Game Over!')
 });
@@ -79,20 +80,20 @@ socket.on('take drawer', () => {
 socket.on('turn start', () => {
     start = Date.now();
     updateClock();
-    timer = setInterval(updateClock, 1000);
+    timerClock = setInterval(updateClock, 1000);
     chat.innerHTML = '';
 });
 
 // Triggers when server tells client the turn has started
 socket.on('turn end', () => {
-    clearInterval(timer);
+    clearInterval(timerClock);
     clock.innerHTML = '&nbsp';
 });
 
 socket.on('current time', time => {
     start = time;
     updateClock();
-    timer = setInterval(updateClock, 1000);
+    timerClock = setInterval(updateClock, 1000);
 });
 
 // Triggers when server sends a new chat message
@@ -219,17 +220,18 @@ for (let elem = 0; elem < colorHistoryElems.length; ++elem) {
 
 canvas.addEventListener('mousemove', draw);
 // Needed in case they just click and let go without moving
-canvas.addEventListener('mousedown', setPosAndDotAndColorHistory);
-// May need to replace later with a timer so its more fluid 
-document.addEventListener('mouseup', sendCanvas);
-canvas.addEventListener('mousemove', sendCanvas);  // mousemove sends Canvas regularly unlike mouseup but does seem to slow processing time
+// Sets new pos, makes a dot, sets an interval to send canvas, and updates color history
+canvas.addEventListener('mousedown', penDown);
+document.addEventListener('mouseup', penUp);
+// mousemove sends Canvas regularly unlike mouseup but does seem to slow processing time
+// canvas.addEventListener('mousemove', sendCanvas);
 // This makes sure it draws correctly when you start your line outside of the canvas
 canvas.addEventListener('mouseenter', setPosition);
 // This makes sure it still draws when you quickly move off of canvas
 canvas.addEventListener('mouseleave', draw);
 
 // Mobile Draw Event Listeners
-canvas.addEventListener('touchstart', setPosAndDotAndColorHistory);
+canvas.addEventListener('touchstart', penDown);
 canvas.addEventListener('touchend', sendCanvas);
 canvas.addEventListener('touchmove', draw);
 
@@ -278,7 +280,7 @@ function setPosition(e) {
     drawBuffer.push(true, e.offsetX, e.offsetY); // setPosition
 }
 
-function setPosAndDotAndColorHistory(e) {
+function penDown(e) {
     if (!e.touches) {
         // Mouse click
         drawBuffer.push(true, e.offsetX, e.offsetY, false, e.offsetX, e.offsetY); // setPosition and dot
@@ -290,10 +292,19 @@ function setPosAndDotAndColorHistory(e) {
         drawBuffer.push(true, touchX, touchY, false, touchX, touchY); // setPosition and dot
         e.preventDefault();
     }
+    // Set interval to send canvas every 50 ms
+    timerSendCanvas = setInterval(sendCanvas, 50);
 
     if (isDrawer) {
         updateColorHistory(hexToRGB(curColor.value));
     }
+}
+
+function penUp(e) {
+    // Remove interval that sends canvas since we aren't drawing anymore
+    clearInterval(timerSendCanvas);
+    sendCanvas(); // Send final canvas for this line
+
 }
 
 function draw(e) {
@@ -314,6 +325,8 @@ function draw(e) {
 }
 
 // End Drawing Handler
+
+
 
 function doFloodFill(e) {
     // clientX and clientY are coordinates of where the drawer clicks/touches on the page

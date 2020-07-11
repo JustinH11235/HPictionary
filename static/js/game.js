@@ -12,6 +12,8 @@ const clock = document.getElementById('clock');
 const curColor = document.getElementById('cur-color');
 const curWidth = document.getElementById('cur-width');
 const clearCanvas = document.getElementById('clear-canvas');  // Button to clear canvas
+const pencilTool = document.getElementById('pencil-tool');
+const floodFill = document.getElementById('flood-fill-bucket');  // Flood Fill Button
 const eraser = document.getElementById('eraser');
 const colorHistoryElems = [document.getElementById('color0'), document.getElementById('color1'), document.getElementById('color2'), document.getElementById('color3'), document.getElementById('color4')];
 const chatBox = document.getElementById('chat-box');
@@ -19,6 +21,11 @@ const chat = document.getElementById('chat');
 const scoreboard = document.getElementById('scoreboard');
 
 var isDrawer = false;
+
+// Pencil tool toggle
+var isPencil = true;  // true by default
+// Flood fill toggle
+var isFloodfill = false;  // false by default
 
 // position of mouse used for drawing by drawing handler
 var pos = { x: 0, y: 0 };
@@ -190,6 +197,20 @@ clearCanvas.addEventListener('click', () => {
     }
 }); 
 
+// Flood Fill Event Listener
+floodFill.addEventListener('click', () => {
+    // deactivate pencil and activate floodFill
+    isPencil = false;
+    isFloodfill = true;
+});
+
+// Pencil Event Listener
+pencilTool.addEventListener('click', () => {
+    // deactivate floodFill and activate pencil
+    isFloodfill = false;
+    isPencil = true;
+})
+
 eraser.addEventListener('click', setColor);
 
 for (let elem = 0; elem < colorHistoryElems.length; ++elem) {
@@ -199,8 +220,9 @@ for (let elem = 0; elem < colorHistoryElems.length; ++elem) {
 canvas.addEventListener('mousemove', draw);
 // Needed in case they just click and let go without moving
 canvas.addEventListener('mousedown', setPosAndDotAndColorHistory);
-// May need to replace later with a timer so its more fluid
+// May need to replace later with a timer so its more fluid 
 document.addEventListener('mouseup', sendCanvas);
+canvas.addEventListener('mousemove', sendCanvas);  // mousemove sends Canvas regularly unlike mouseup but does seem to slow processing time
 // This makes sure it draws correctly when you start your line outside of the canvas
 canvas.addEventListener('mouseenter', setPosition);
 // This makes sure it still draws when you quickly move off of canvas
@@ -292,3 +314,33 @@ function draw(e) {
 }
 
 // End Drawing Handler
+
+function doFloodFill(e) {
+    // clientX and clientY are coordinates of where the drawer clicks/touches on the page
+    // (StartX, StartY) denotes coordinates of starting pixel relative to canvas (parent container)
+    var StartX = e.clientX - e.offsetX;
+    var StartY = e.clientY - e.offsetY;
+    var startPixelColor = ctx.getImageData(StartX, StartY, 1, 1).data // returns array [r, g, b, a]
+    var fillColor = curColor.value; // returns color in hex
+
+    pixelStack = [[StartX, StartY]]  // pushing pixel data of starting pixel onto stack
+
+    while (pixelStack.length) {
+        let newPos = pixelStack.pop();
+        let x = newPos[0];
+        let y = newPos[1];
+
+        // Will add code 
+
+    }
+
+    // Helper functions for doFloodFill
+
+    function matchStartColor(startPixelColor, pixelPos) {
+        var r = img.data[pixelPos + 0];
+        var g = img.data[pixelPos + 1];
+        var b = img.data[pixelPos + 2];
+        return (startPixelColor[0] == r && startPixelColor[1] == g && startPixelColor[2] == b);
+    }
+}
+

@@ -245,11 +245,12 @@ setInterval(() => {
     if (isDrawer) {
         // If person is currently the drawer
         if (drawBuffer.length) {
-            if (drawBuffer.shift()) {
+            let action = drawBuffer.shift();
+            if (action == 'pos') {
                 // This means we need to set a position
                 pos.x = drawBuffer.shift();
                 pos.y = drawBuffer.shift();
-            } else {
+            } else if (action == 'line') {
                 // This means we need to draw a line from pos to given coords and set position to pos
                 ctx.beginPath(); // begin
                 ctx.lineWidth = curWidth.value;
@@ -261,6 +262,14 @@ setInterval(() => {
                 pos.y = drawBuffer.shift();
                 ctx.lineTo(pos.x-1, pos.y-1); // to
                 ctx.stroke(); // draw it!
+            } else if (action = 'setInterval') {
+                // Set a interval to send canvas
+                timerSendCanvas = setInterval(sendCanvas, 75);
+            } else if (action = 'clearInterval') {
+                // Clear the interval that sends canvas
+                clearInterval(timerSendCanvas);
+                // Send final version of line
+                sendCanvas();
             }
         }
     } else {
@@ -277,21 +286,21 @@ function sendCanvas(e) {
 }
 
 function setPosition(e) {
-    drawBuffer.push(true, e.offsetX, e.offsetY); // setPosition
+    drawBuffer.push('pos', e.offsetX, e.offsetY); // setPosition
 }
 
 function penDown(e) {
     if (!e.touches) {
         // Mouse click
-        drawBuffer.push(true, e.offsetX, e.offsetY, false, e.offsetX, e.offsetY); // setPosition and dot
-        // Set interval to send canvas every 50 ms
-        timerSendCanvas = setInterval(sendCanvas, 75);
+        drawBuffer.push('pos', e.offsetX, e.offsetY, 'line', e.offsetX, e.offsetY); // setPosition and dot
+        // Set interval to send canvas every 75 ms
+        drawBuffer.push('setInterval');
     } else {
         // Mobile Touch
         var touch = e.touches[0];
         touchX = touch.pageX - touch.target.offsetLeft;
         touchY = touch.pageY - touch.target.offsetTop;
-        drawBuffer.push(true, touchX, touchY, false, touchX, touchY); // setPosition and dot
+        drawBuffer.push('pos', touchX, touchY, 'line', touchX, touchY); // setPosition and dot
         e.preventDefault();
     }
 
@@ -302,8 +311,7 @@ function penDown(e) {
 
 function penUp(e) {
     // Remove interval that sends canvas since we aren't drawing anymore
-    clearInterval(timerSendCanvas);
-    sendCanvas(); // Send final canvas for this line
+    drawBuffer.push('clearInterval')
 
 }
 
@@ -313,13 +321,13 @@ function draw(e) {
         // mouse left button must be pressed
         if (e.buttons !== 1) return;
 
-        drawBuffer.push(false, e.offsetX, e.offsetY); // Line
+        drawBuffer.push('line', e.offsetX, e.offsetY); // Line
     } else {
         // Mobile draw
         var touch = e.touches[0];
         touchX = touch.pageX - touch.target.offsetLeft;
         touchY = touch.pageY - touch.target.offsetTop;
-        drawBuffer.push(false, touchX, touchY); // Line
+        drawBuffer.push('line', touchX, touchY); // Line
         e.preventDefault();
     }
 }

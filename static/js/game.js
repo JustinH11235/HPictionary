@@ -264,7 +264,7 @@ setInterval(() => {
                 ctx.stroke(); // draw it!
             } else if (action = 'setInterval') {
                 // Set a interval to send canvas
-                timerSendCanvas = setInterval(sendCanvas, 75);
+                timerSendCanvas = setInterval(sendCanvas, 150);
             } else if (action = 'clearInterval') {
                 // Clear the interval that sends canvas
                 clearInterval(timerSendCanvas);

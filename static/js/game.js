@@ -180,10 +180,12 @@ function updateClock() {
 
 clearCanvas.addEventListener('click', () => {
     if(isDrawer) {
+        // Clears canvas
         let blankCanvas = new Array(CANVAS_HEIGHT*CANVAS_WIDTH*4).fill(0);
         let newUInt8Arr = new Uint8ClampedArray(blankCanvas);
         let newImageData = new ImageData(newUInt8Arr, CANVAS_WIDTH, CANVAS_HEIGHT)
         ctx.putImageData(newImageData, 0, 0);
+        // Sends new canvas to server
         sendCanvas();
     }
 }); 
@@ -204,6 +206,11 @@ canvas.addEventListener('mouseenter', setPosition);
 // This makes sure it still draws when you quickly move off of canvas
 canvas.addEventListener('mouseleave', draw);
 
+// Mobile Draw Event Listeners
+canvas.addEventListener('touchstart', setPosAndDotAndColorHistory);
+canvas.addEventListener('touchend', sendCanvas);
+canvas.addEventListener('touchmove', draw);
+
 // End Event Listeners
 
 
@@ -216,8 +223,8 @@ setInterval(() => {
         if (drawBuffer.length) {
             if (drawBuffer.shift()) {
                 // This means we need to set a position
-                pos.x = drawBuffer.shift() - canvas.offsetLeft;
-                pos.y = drawBuffer.shift() - canvas.offsetTop;
+                pos.x = drawBuffer.shift();
+                pos.y = drawBuffer.shift();
             } else {
                 // This means we need to draw a line from pos to given coords and set position to pos
                 ctx.beginPath(); // begin
@@ -225,8 +232,9 @@ setInterval(() => {
                 ctx.strokeStyle = curColor.value;
 
                 ctx.moveTo(pos.x-1, pos.y-1); // from
-                pos.x = drawBuffer.shift() - canvas.offsetLeft;
-                pos.y = drawBuffer.shift() - canvas.offsetTop;
+                
+                pos.x = drawBuffer.shift();
+                pos.y = drawBuffer.shift();
                 ctx.lineTo(pos.x-1, pos.y-1); // to
                 ctx.stroke(); // draw it!
             }
@@ -245,11 +253,21 @@ function sendCanvas(e) {
 }
 
 function setPosition(e) {
-    drawBuffer.push(true, e.clientX, e.clientY); // setPosition
+    drawBuffer.push(true, e.offsetX, e.offsetY); // setPosition
 }
 
 function setPosAndDotAndColorHistory(e) {
-    drawBuffer.push(true, e.clientX, e.clientY, false, e.clientX, e.clientY); // setPosition and dot
+    if (!e.touches) {
+        // Mouse click
+        drawBuffer.push(true, e.offsetX, e.offsetY, false, e.offsetX, e.offsetY); // setPosition and dot
+    } else {
+        // Mobile Touch
+        var touch = e.touches[0];
+        touchX = touch.pageX - touch.target.offsetLeft;
+        touchY = touch.pageY - touch.target.offsetTop;
+        drawBuffer.push(true, touchX, touchY, false, touchX, touchY); // setPosition and dot
+        e.preventDefault();
+    }
 
     if (isDrawer) {
         updateColorHistory(hexToRGB(curColor.value));
@@ -257,79 +275,20 @@ function setPosAndDotAndColorHistory(e) {
 }
 
 function draw(e) {
-    // mouse left button must be pressed
-    if (e.buttons !== 1) return;
+    if (!e.touches) {
+        // Mouse draw
+        // mouse left button must be pressed
+        if (e.buttons !== 1) return;
 
-    drawBuffer.push(false, e.clientX, e.clientY); // Line
+        drawBuffer.push(false, e.offsetX, e.offsetY); // Line
+    } else {
+        // Mobile draw
+        var touch = e.touches[0];
+        touchX = touch.pageX - touch.target.offsetLeft;
+        touchY = touch.pageY - touch.target.offsetTop;
+        drawBuffer.push(false, touchX, touchY); // Line
+        e.preventDefault();
+    }
 }
 
 // End Drawing Handler
-
-
-
-
-
-
-
-
-
-
-
-// old code
-
-//   socket.on('disconnect', () => {
-//     console.log('Player Left Game');
-//     setTimeout(() => { window.location.replace('/') }, 1);
-//   });
-
-
-// // Start of Mobile Swipe Handler
-// document.addEventListener('touchstart', handleTouchStart, false);
-// document.addEventListener('touchmove', handleTouchMove, false);
-
-// var xDown = null;
-// var yDown = null;
-// function getTouches(evt) {
-//   return evt.touches ||             // browser API
-//     evt.originalEvent.touches; // jQuery
-// }
-
-// function handleTouchStart(evt) {
-//   const firstTouch = getTouches(evt)[0];
-//   xDown = firstTouch.clientX;
-//   yDown = firstTouch.clientY;
-// };
-
-// function handleTouchMove(evt) {
-//   if (!xDown || !yDown) {
-//     return;
-//   }
-
-//   var xUp = evt.touches[0].clientX;
-//   var yUp = evt.touches[0].clientY;
-
-//   var xDiff = xDown - xUp;
-//   var yDiff = yDown - yUp;
-
-//   if (Math.abs(xDiff) > Math.abs(yDiff)) {
-//     if (xDiff > 0) {
-//       /* left swipe */
-//       socket.emit('change direction', 'left');
-//     } else {
-//       /* right swipe */
-//       socket.emit('change direction', 'right');
-//     }
-//   } else {
-//     if (yDiff > 0) {
-//       /* up swipe */
-//       socket.emit('change direction', 'up');
-//     } else {
-//       /* down swipe */
-//       socket.emit('change direction', 'down');
-//     }
-//   }
-//   /* reset values */
-//   xDown = null;
-//   yDown = null;
-// };
-// // End Mobile Swipe Handler

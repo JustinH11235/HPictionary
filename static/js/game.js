@@ -184,7 +184,7 @@ clearCanvas.addEventListener('click', () => {
         let newUInt8Arr = new Uint8ClampedArray(blankCanvas);
         let newImageData = new ImageData(newUInt8Arr, CANVAS_WIDTH, CANVAS_HEIGHT)
         ctx.putImageData(newImageData, 0, 0);
-        socket.broadcast.emit('new canvas', newCanvas);
+        sendCanvas();
     }
 }); 
 

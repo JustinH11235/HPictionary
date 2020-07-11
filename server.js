@@ -15,7 +15,7 @@ const io = socketIO(http, {
     pingTimeout: 60000 // How many ms without a pong packet to consider the connection closed.
 });
 
-const wordCollection = require('./words');  // import words from a separate file
+const wordCollection = require('./static/js/words');  // import words from a separate file
 
 // Setup bodyParser
 app.use(bodyParser.json());

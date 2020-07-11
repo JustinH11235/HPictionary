@@ -262,13 +262,7 @@ setInterval(() => {
                 pos.y = drawBuffer.shift();
                 ctx.lineTo(pos.x-1, pos.y-1); // to
                 ctx.stroke(); // draw it!
-            } else if (action = 'setInterval') {
-                // Set a interval to send canvas
-                timerSendCanvas = setInterval(sendCanvas, 250);
-            } else if (action = 'clearInterval') {
-                // Clear the interval that sends canvas
-                clearInterval(timerSendCanvas);
-                // Send final version of line
+            } else if (action == 'sendCanvas') {
                 sendCanvas();
             }
         }
@@ -294,7 +288,6 @@ function penDown(e) {
         // Mouse click
         drawBuffer.push('pos', e.offsetX, e.offsetY, 'line', e.offsetX, e.offsetY); // setPosition and dot
         // Set interval to send canvas every 250 ms
-        // drawBuffer.push('setInterval');
         timerSendCanvas = setInterval(sendCanvas, 250)
     } else {
         // Mobile Touch
@@ -312,10 +305,10 @@ function penDown(e) {
 
 function penUp(e) {
     // Remove interval that sends canvas since we aren't drawing anymore
-    // drawBuffer.push('clearInterval')
     clearInterval(timerSendCanvas);
     // Send final state of line
-    sendCanvas();
+    // sendCanvas();
+    drawBuffer.push('sendCanvas');
 
 }
 

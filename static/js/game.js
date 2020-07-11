@@ -218,8 +218,10 @@ setInterval(() => {
         if (drawBuffer.length) {
             if (drawBuffer.shift()) {
                 // This means we need to set a position
-                pos.x = drawBuffer.shift() - canvas.offsetLeft;
-                pos.y = drawBuffer.shift() - canvas.offsetTop;
+//                 pos.x = drawBuffer.shift() - canvas.offsetLeft;
+//                 pos.y = drawBuffer.shift() - canvas.offsetTop;
+                pos.x = drawBuffer.shift();
+                pos.y = drawBuffer.shift();
             } else {
                 // This means we need to draw a line from pos to given coords and set position to pos
                 ctx.beginPath(); // begin
@@ -227,8 +229,10 @@ setInterval(() => {
                 ctx.strokeStyle = curColor.value;
 
                 ctx.moveTo(pos.x-1, pos.y-1); // from
-                pos.x = drawBuffer.shift() - canvas.offsetLeft;
-                pos.y = drawBuffer.shift() - canvas.offsetTop;
+//                 pos.x = drawBuffer.shift() - canvas.offsetLeft;
+//                 pos.y = drawBuffer.shift() - canvas.offsetTop;
+                pos.x = drawBuffer.shift();
+                pos.y = drawBuffer.shift();
                 ctx.lineTo(pos.x-1, pos.y-1); // to
                 ctx.stroke(); // draw it!
             }

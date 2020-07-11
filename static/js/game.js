@@ -284,6 +284,8 @@ function penDown(e) {
     if (!e.touches) {
         // Mouse click
         drawBuffer.push(true, e.offsetX, e.offsetY, false, e.offsetX, e.offsetY); // setPosition and dot
+        // Set interval to send canvas every 50 ms
+        timerSendCanvas = setInterval(sendCanvas, 75);
     } else {
         // Mobile Touch
         var touch = e.touches[0];
@@ -291,8 +293,6 @@ function penDown(e) {
         touchY = touch.pageY - touch.target.offsetTop;
         drawBuffer.push(true, touchX, touchY, false, touchX, touchY); // setPosition and dot
         e.preventDefault();
-        // Set interval to send canvas every 50 ms
-        timerSendCanvas = setInterval(sendCanvas, 75);
     }
 
     if (isDrawer) {

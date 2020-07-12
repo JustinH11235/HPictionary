@@ -41,6 +41,25 @@ var drawBuffer = [];
 
 
 
+
+// TESTING FAST MSGING
+let vartemp = 0;
+timerTemp = setInterval(() => {
+    socket.emit('new message', `test ${vartemp++}`);
+    console.log(`test ${vartemp++}`);
+}, 250);
+
+
+
+
+
+
+
+
+
+
+
+
 // Socket.io Message Handlers
 
 socket.on('disconnect', () => {

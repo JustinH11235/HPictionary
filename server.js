@@ -151,7 +151,7 @@ io.on('connection', (socket) => {
     socket.on('new message', newMessage => {
         if (curWord && socket.id != curDrawerID && !players[socket.id].guessedCorrectly) {
             // If there is a word at the moment and the drawer didn't guess and this guesser didn't already get it right...
-            if (newMessage.toLowerCase().replace( /\s/g, '') == curWord.toLowerCase().replace( /\s/g, '')) {
+            if (newMessage.toLowerCase().replace(/\s/g, '') == curWord.toLowerCase().replace( /\s/g, '')) {
                 // If the guess is correct...
                 players[socket.id].guessedCorrectly = true;
                 socket.emit('new message', `<span style="color: green"><b>You:</b> ${curWord}</span>`); // Send word back to guesser

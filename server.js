@@ -36,12 +36,13 @@ app.get('/', (req, res) => res.render('index'));
 // Triggered when users submit join game form
 // Once we have Join Game and Create Game buttons, we'll need a way to differentiate which one was clicked
 app.post('/', (req, res) => {
-  res.render('game', {
-    username: req.body.username,
-    width: width,
-    height: height,
-    turnTime: turnTime
-  });
+    console.log(req.body.username)
+    res.render('game', {
+        username: req.body.username,
+        width: width,
+        height: height,
+        turnTime: turnTime
+    });
 });
 // End Routing Handlers
 
@@ -85,6 +86,29 @@ var players = {};
 */
 var curDrawerID = null;
 // End Global Game Variables
+
+const htmlMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&apos;',
+    '`': '&#96;',
+    ' ': '&nbsp;',
+    '!': '&#33;',
+    '@': '&#64;',
+    '$': '&#36;',
+    '%': '&#37;',
+    '(': '&#40;',
+    ')': '&#41;',
+    '=': '&#61;',
+    '+': '&#43;',
+    '{': '&#123;',
+    '}': '&#125;',
+    '[': '&#91;',
+    ']': '&#93;'
+
+}
 
 
 
@@ -151,6 +175,8 @@ io.on('connection', (socket) => {
     socket.on('new message', newMessage => {
         if (curWord && socket.id != curDrawerID && !players[socket.id].guessedCorrectly) {
             // If there is a word at the moment and the drawer didn't guess and this guesser didn't already get it right...
+            // Sanitize HTML special characters in string
+            newMessage = sanitize(newMessage);
             if (newMessage.toLowerCase().replace(/\s/g, '') == curWord.toLowerCase().replace( /\s/g, '')) {
                 // If the guess is correct...
                 players[socket.id].guessedCorrectly = true;
@@ -213,6 +239,11 @@ function getScoreboard() {
         curScoreboard.push({username: players[id].username, score: players[id].score});
     }
     return curScoreboard
+}
+
+function sanitize(str) {
+    console.log(str.replace(/[<>"']/g, char => { return htmlMap[char] }))
+    return str.replace(/[<>"']/g, char => { return htmlMap[char] });
 }
 
 // End Helper Functions

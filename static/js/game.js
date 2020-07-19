@@ -228,7 +228,7 @@ canvas.addEventListener('mouseleave', draw);
 canvas.addEventListener('touchstart', penDown);
 canvas.addEventListener('touchend', sendCanvas);
 canvas.addEventListener('touchmove', draw);
-canvas.addEventListener('touchend', doFloodFill);
+canvas.addEventListener('touchstart', doFloodFill);
 
 // Flood Fill Event Listeners
 canvas.addEventListener('click', doFloodFill);
@@ -333,8 +333,14 @@ function draw(e) {
 
 function doFloodFill(e) {
     if (isFloodFill) {
-        var StartX = e.offsetX;
-        var StartY = e.offsetY;
+        if (e.touches) {
+            var touch = e.touches[0];
+            var StartX = touch.pageX - touch.target.offsetLeft;
+            var StartY = touch.pageY - touch.target.offsetTop;
+        } else {
+            var StartX = e.offsetX;
+            var StartY = e.offsetY;
+        }
 
         var startPixelColor = ctx.getImageData(StartX, StartY, 1, 1).data; // returns array [r, g, b, a]
         var fillColor = hexToRGBList(curColor.value); // returns color in [R, G, B]

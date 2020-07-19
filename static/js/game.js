@@ -324,6 +324,7 @@ function draw(e) {
         touchY = touch.pageY - touch.target.offsetTop;
         drawBuffer.push('line', touchX, touchY); // Line
         e.preventDefault();
+        console.log('mob1')
     }
 }
 
@@ -339,7 +340,7 @@ function doFloodFill(e) {
             let touch = e.touches[0];
             StartX = touch.pageX - touch.target.offsetLeft;
             StartY = touch.pageY - touch.target.offsetTop;
-            console.log('mob')
+            console.log('mob2')
         } else {
             StartX = e.offsetX;
             StartY = e.offsetY;

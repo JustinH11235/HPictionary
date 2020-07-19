@@ -361,6 +361,7 @@ function doFloodFill(e) {
             let newPixel = pixelStack.pop();
             let x = newPixel[0];
             let y = newPixel[1];
+            socket.emit('debug', `x: ${x}, y: ${y}`)
 
             newPixelIdx = (CANVAS_WIDTH * y + x) * 4;
             if (visited.includes(newPixelIdx)) {

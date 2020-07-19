@@ -108,7 +108,7 @@ socket.on('scoreboard update', data => {
     for (let player = 0, len = data.length; player < len; player++) {
         let score = document.createElement("li");
         score.classList.add("list-group-item");
-        score.innerHTML = '<h6>' + data[player].username.toString() + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp' + data[player].score.toString() + '</h6>';
+        score.innerHTML = '<h6>' + data[player].username.toString() + '<b>&nbsp;|&nbsp;</b>' + data[player].score.toString() + '</h6>';
         scoreboard.appendChild(score);
     }
 });

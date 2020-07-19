@@ -31,7 +31,7 @@ div.container1
   transform: translate(-50%, -20%)
 } */
 
-div.container1 ul.list-group.list-group-flush
+div.container1 ul
 {
   width: 45%;
   margin-left: auto;
@@ -47,6 +47,19 @@ div.container-chat
   left: 85%;
   margin-right: -50%;
   transform: translate(-50%, -20%)
+}
+
+div.container-scoreboard
+{
+  height: 10em;
+  margin: 0;
+  position: absolute;
+  top: 115%;
+  left: 15%;
+  margin-right: -50%;
+  transform: translate(-50%, -20%);
+  text-align: center;
+  width: 25%;
 }
 
 ul#chat
@@ -97,7 +110,7 @@ ul#chat li
 }
 
 
-.active-button {
+/*.active-button {
   background-color: white;
   width: 120px;
   border: none;
@@ -109,7 +122,7 @@ ul#chat li
   font-size: 10px;
   margin: 2px 2px;
   cursor: pointer;
-}
+}*/
 
 .inactive-button {
   opacity: 50%;

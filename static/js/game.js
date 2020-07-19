@@ -239,7 +239,7 @@ canvas.addEventListener('click', doFloodFill);
 // Drawing Handler
 
 setInterval(() => {
-    if (isDrawer) {
+    if (isDrawer && !isFloodFill) {
         // If person is currently the drawer
         if (drawBuffer.length) {
             let action = drawBuffer.shift();
@@ -328,6 +328,8 @@ function draw(e) {
 
 // End Drawing Handler
 
+
+
 function doFloodFill(e) {
     if (isFloodFill) {
         var StartX = e.offsetX;
@@ -339,26 +341,38 @@ function doFloodFill(e) {
 
         var pixelStack = [[StartX, StartY]];  // pushing pixel data of starting pixel onto stack
         
+        var visited = [];
+        console.log(startPixelColor)
         //console.log(StartX, StartY, startPixelColor, fillColor, pixelStack);
-        //*
+        //
         while (pixelStack.length > 0) {
-            console.log(pixelStack.length);
+            // console.log(pixelStack.length);
             let newPixel = pixelStack.pop();
             let x = newPixel[0];
             let y = newPixel[1];
 
             newPixelIdx = (CANVAS_WIDTH * y + x) * 4;
-            while (y > 0 && matchStartColor(startPixelColor, newPixelIdx)) {
-                newPixelIdx -= CANVAS_WIDTH * 4;
-                y--;
+            if (visited.includes(newPixelIdx)) {
+                continue;
+            }
+            visited.push(newPixelIdx);
+            
+            // Needed in case it hits another color above it instead of top of board
+            if (y >= 0 && matchStartColor(startPixelColor, newPixelIdx)) {
+                while (y >= 0 && matchStartColor(startPixelColor, newPixelIdx)) {
+                    newPixelIdx -= CANVAS_WIDTH * 4;
+                    y--;
+                }
+                newPixelIdx += CANVAS_WIDTH * 4;
+                y++;
             }
 
             stackedLeft = false;
             stackedRight = false;
-
             while (y < CANVAS_HEIGHT && matchStartColor(startPixelColor, newPixelIdx)) {
                 // 'flood filling' a pixel
                 colorPixel(fillColor, newPixelIdx);
+                //
                 
                 // looking at pixels on left 
                 if (x > 0) {  
@@ -403,6 +417,11 @@ function doFloodFill(e) {
             var r = imageArray[newPixelIdx + 0];
             var g = imageArray[newPixelIdx + 1];
             var b = imageArray[newPixelIdx + 2];
+            var a = imageArray[newPixelIdx + 3];
+            // Makes flood filling on white better but not anything else
+            if (startPixelColor[0] == 0 && startPixelColor[1] == 0 && startPixelColor[2] == 0 && a < 125) {
+                return true;
+            }
             return (startPixelColor[0] == r && startPixelColor[1] == g && startPixelColor[2] == b);
         }
 
@@ -412,7 +431,7 @@ function doFloodFill(e) {
             imageArray[newPixelIdx + 2] = fillColor[2];
             imageArray[newPixelIdx + 3] = 255;
         }
-        //*/
+        
         function hexToRGBList(hex) {
             rgbList = [];
             for (i = 1; i < 6; i += 2) {

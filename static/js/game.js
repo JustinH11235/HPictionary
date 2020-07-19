@@ -338,8 +338,8 @@ function doFloodFill(e) {
         var StartY;
         if (e.touches) {
             let touch = e.touches[0];
-            StartX = touch.pageX - touch.target.offsetLeft;
-            StartY = touch.pageY - touch.target.offsetTop;
+            StartX = parseInt(touch.pageX - touch.target.offsetLeft);
+            StartY = parseInt(touch.pageY - touch.target.offsetTop);
             socket.emit('debug', 'inside e.touches if')
         } else {
             StartX = e.offsetX;

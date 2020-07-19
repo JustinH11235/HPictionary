@@ -333,13 +333,16 @@ function draw(e) {
 
 function doFloodFill(e) {
     if (isFloodFill) {
+        var StartX;
+        var StartY;
         if (e.touches) {
-            var touch = e.touches[0];
-            var StartX = touch.pageX - touch.target.offsetLeft;
-            var StartY = touch.pageY - touch.target.offsetTop;
+            let touch = e.touches[0];
+            StartX = touch.pageX - touch.target.offsetLeft;
+            StartY = touch.pageY - touch.target.offsetTop;
+            console.log('mob')
         } else {
-            var StartX = e.offsetX;
-            var StartY = e.offsetY;
+            StartX = e.offsetX;
+            StartY = e.offsetY;
         }
 
         var startPixelColor = ctx.getImageData(StartX, StartY, 1, 1).data; // returns array [r, g, b, a]
@@ -349,7 +352,6 @@ function doFloodFill(e) {
         var pixelStack = [[StartX, StartY]];  // pushing pixel data of starting pixel onto stack
         
         var visited = [];
-        console.log(startPixelColor)
         //console.log(StartX, StartY, startPixelColor, fillColor, pixelStack);
         //
         while (pixelStack.length > 0) {

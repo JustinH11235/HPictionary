@@ -73,7 +73,8 @@ ul#chat li
 }
 
 #flood-fill-bucket {
-  background-color: rgb(29, 51, 142);
+  /*background-color: rgb(29, 51, 142);*/
+  border: 2px solid black;
 }
 
 /*
@@ -111,17 +112,6 @@ ul#chat li
 }
 
 .inactive-button {
-  background-color: rgb(29, 51, 142);
-  width: 120px;
-  border: none;
-  color: white;
-  padding: 3px 4px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 10px;
-  margin: 2px 2px;
-  cursor: pointer;
-  opacity: 75%;
+  opacity: 50%;
 }
  

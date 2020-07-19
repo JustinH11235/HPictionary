@@ -228,6 +228,7 @@ canvas.addEventListener('mouseleave', draw);
 canvas.addEventListener('touchstart', penDown);
 canvas.addEventListener('touchend', sendCanvas);
 canvas.addEventListener('touchmove', draw);
+canvas.addEventListener('touchend', doFloodFill);
 
 // Flood Fill Event Listeners
 canvas.addEventListener('click', doFloodFill);

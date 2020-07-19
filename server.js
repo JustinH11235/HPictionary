@@ -205,6 +205,10 @@ io.on('connection', (socket) => {
         }
     });
     
+    socket.on('debug', debug_statement => {
+        console.log(`Debug: ${debug_statement}`);
+    });
+
     //EMPTY SPACE FOR NEW SOCKET HANDLER
 
 });

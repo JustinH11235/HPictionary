@@ -95,12 +95,12 @@ ul#chat li
   cursor: pointer;
 }
 
-/*
+
 .active-button {
   background-color: white;
   width: 120px;
   border: none;
-  color: black;
+  color: white;
   padding: 3px 4px;
   text-align: center;
   text-decoration: none;
@@ -122,5 +122,6 @@ ul#chat li
   font-size: 10px;
   margin: 2px 2px;
   cursor: pointer;
+  opacity: 75%;
 }
-*/
+ 

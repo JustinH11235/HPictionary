@@ -204,8 +204,9 @@ floodFill.addEventListener('click', () => {
     else {
         isFloodFill = true;
     }
+    floodFill.classList.toggle('active-button');
+    floodFill.classList.toggle('inactive-button');
 });
-
 
 eraser.addEventListener('click', setColor);
 

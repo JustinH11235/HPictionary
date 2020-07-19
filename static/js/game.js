@@ -324,7 +324,6 @@ function draw(e) {
         touchY = touch.pageY - touch.target.offsetTop;
         drawBuffer.push('line', touchX, touchY); // Line
         e.preventDefault();
-        console.log('mob1')
     }
 }
 
@@ -340,7 +339,6 @@ function doFloodFill(e) {
             let touch = e.touches[0];
             StartX = parseInt(touch.pageX - touch.target.offsetLeft);
             StartY = parseInt(touch.pageY - touch.target.offsetTop);
-            socket.emit('debug', 'inside e.touches if')
         } else {
             StartX = e.offsetX;
             StartY = e.offsetY;
@@ -356,12 +354,10 @@ function doFloodFill(e) {
         //console.log(StartX, StartY, startPixelColor, fillColor, pixelStack);
         //
         while (pixelStack.length > 0) {
-            socket.emit('debug', 'while loop iteration')
             // console.log(pixelStack.length);
             let newPixel = pixelStack.pop();
             let x = newPixel[0];
             let y = newPixel[1];
-            socket.emit('debug', `x: ${x}, y: ${y}`)
 
             newPixelIdx = (CANVAS_WIDTH * y + x) * 4;
             if (visited.includes(newPixelIdx)) {
@@ -423,7 +419,6 @@ function doFloodFill(e) {
         let newImageData = new ImageData(imageArray, CANVAS_WIDTH, CANVAS_HEIGHT);
         ctx.putImageData(newImageData, 0, 0);
         sendCanvas();
-        socket.emit('debug', 'sent the canvas')
         
         // Helper functions for doFloodFill
         function matchStartColor(startPixelColor, newPixelIdx) {

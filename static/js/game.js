@@ -332,7 +332,7 @@ function draw(e) {
 
 
 function doFloodFill(e) {
-    if (isFloodFill) {
+    if (isDrawer && isFloodFill) {
         var StartX;
         var StartY;
         if (e.touches) {
@@ -426,10 +426,10 @@ function doFloodFill(e) {
             var g = imageArray[newPixelIdx + 1];
             var b = imageArray[newPixelIdx + 2];
             var a = imageArray[newPixelIdx + 3];
-            // Makes flood filling on white better but not anything else
-            if (startPixelColor[0] == 0 && startPixelColor[1] == 0 && startPixelColor[2] == 0 && a < 125) {
-                return true;
-            }
+            // // Makes flood filling on white better but not anything else
+            // if (startPixelColor[0] == 0 && startPixelColor[1] == 0 && startPixelColor[2] == 0 && a < 125) {
+            //     return true;
+            // }
             return (startPixelColor[0] == r && startPixelColor[1] == g && startPixelColor[2] == b);
         }
 

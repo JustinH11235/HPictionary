@@ -55,7 +55,7 @@ app.post('/', (req, res) => {
 const width = 400;
 const height = 300;
 // Create a canvas array of 0's of correct size
-var canvas = new Array(width*height*4).fill(0);
+var canvas = new Array(width*height*4).fill(255);
 var timer;
 var curTime;
 var curWord;
@@ -260,7 +260,7 @@ function sanitize(str) {
 // This is the code we will use but we need to trigger it after someone has actually clicked start game after creating a game.
 function startGame() {
     gameInProgress = true;
-    canvas.fill(0); // Clears canvas
+    canvas.fill(255); // Clears canvas
     words = wordCollection.Collection();  // Gets word list from 'words' module
     numRounds = 5;
     curRound = 0;
@@ -305,7 +305,7 @@ function nextTurn() {
             removeCurDrawer();
         }
         curWord = null;
-        canvas.fill(0); // Clears canvas
+        canvas.fill(255); // Clears canvas
         io.emit('new canvas', canvas); // Send cleared canvas to all players
         io.emit('turn end');
         curTime = null;
@@ -329,7 +329,7 @@ function nextTurn() {
             if (!found) {
                 console.log('did not find any remaining players')
                 removeCurDrawer();
-                canvas.fill(0); // Clears canvas
+                canvas.fill(255); // Clears canvas
                 io.emit('new canvas', canvas); // Send cleared canvas to all players
                 console.log(`Round ${curRound} ended`);
 

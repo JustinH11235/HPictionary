@@ -12,7 +12,7 @@ const clock = document.getElementById('clock');
 const curColor = document.getElementById('cur-color');
 const curWidth = document.getElementById('cur-width');
 const clearCanvas = document.getElementById('clear-canvas');  // Button to clear canvas
-// const pencilTool = document.getElementById('pencil-tool');
+
 const floodFill = document.getElementById('flood-fill-bucket');  // Flood Fill Button
 const eraser = document.getElementById('eraser');
 const colorHistoryElems = [document.getElementById('color0'), document.getElementById('color1'), document.getElementById('color2'), document.getElementById('color3'), document.getElementById('color4')];
@@ -22,8 +22,6 @@ const scoreboard = document.getElementById('scoreboard');
 
 var isDrawer = false;
 
-// Pencil tool toggle
-// var isPencil = true;  // true by default
 // Flood fill toggle
 var isFloodFill = false;  // false by default
 
@@ -207,14 +205,7 @@ floodFill.addEventListener('click', () => {
         isFloodFill = true;
     }
 });
-/*
-// Pencil Event Listener
-pencilTool.addEventListener('click', () => {
-    // deactivate floodFill and activate pencil
-    isFloodfill = false;
-    isPencil = true;
-})
-*/
+
 
 eraser.addEventListener('click', setColor);
 

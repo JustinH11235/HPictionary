@@ -12,7 +12,7 @@ const clock = document.getElementById('clock');
 const curColor = document.getElementById('cur-color');
 const curWidth = document.getElementById('cur-width');
 const clearCanvas = document.getElementById('clear-canvas');  // Button to clear canvas
-const pencilTool = document.getElementById('pencil-tool');
+// const pencilTool = document.getElementById('pencil-tool');
 const floodFill = document.getElementById('flood-fill-bucket');  // Flood Fill Button
 const eraser = document.getElementById('eraser');
 const colorHistoryElems = [document.getElementById('color0'), document.getElementById('color1'), document.getElementById('color2'), document.getElementById('color3'), document.getElementById('color4')];
@@ -23,9 +23,9 @@ const scoreboard = document.getElementById('scoreboard');
 var isDrawer = false;
 
 // Pencil tool toggle
-var isPencil = true;  // true by default
+// var isPencil = true;  // true by default
 // Flood fill toggle
-var isFloodfill = false;  // false by default
+var isFloodFill = false;  // false by default
 
 // position of mouse used for drawing by drawing handler
 var pos = { x: 0, y: 0 };
@@ -200,17 +200,21 @@ clearCanvas.addEventListener('click', () => {
 
 // Flood Fill Event Listener
 floodFill.addEventListener('click', () => {
-    // deactivate pencil and activate floodFill
-    isPencil = false;
-    isFloodfill = true;
+    if (isFloodFill) {
+        isFloodFill = false;
+    }
+    else {
+        isFloodFill = true;
+    }
 });
-
+/*
 // Pencil Event Listener
 pencilTool.addEventListener('click', () => {
     // deactivate floodFill and activate pencil
     isFloodfill = false;
     isPencil = true;
 })
+*/
 
 eraser.addEventListener('click', setColor);
 
@@ -223,7 +227,6 @@ canvas.addEventListener('mousemove', draw);
 // Sets new pos, makes a dot, sets an interval to send canvas, and updates color history
 canvas.addEventListener('mousedown', penDown);
 document.addEventListener('mouseup', penUp);
-// mousemove sends Canvas regularly unlike mouseup but does seem to slow processing time
 // canvas.addEventListener('mousemove', sendCanvas);
 // This makes sure it draws correctly when you start your line outside of the canvas
 canvas.addEventListener('mouseenter', setPosition);
@@ -234,6 +237,9 @@ canvas.addEventListener('mouseleave', draw);
 canvas.addEventListener('touchstart', penDown);
 canvas.addEventListener('touchend', sendCanvas);
 canvas.addEventListener('touchmove', draw);
+
+// Flood Fill Event Listeners
+canvas.addEventListener('click', doFloodFill);
 
 // End Event Listeners
 
@@ -331,34 +337,98 @@ function draw(e) {
 
 // End Drawing Handler
 
-
-
 function doFloodFill(e) {
-    // clientX and clientY are coordinates of where the drawer clicks/touches on the page
-    // (StartX, StartY) denotes coordinates of starting pixel relative to canvas (parent container)
-    var StartX = e.clientX - e.offsetX;
-    var StartY = e.clientY - e.offsetY;
-    var startPixelColor = ctx.getImageData(StartX, StartY, 1, 1).data // returns array [r, g, b, a]
-    var fillColor = curColor.value; // returns color in hex
+    if (isFloodFill) {
+        var StartX = e.offsetX;
+        var StartY = e.offsetY;
 
-    pixelStack = [[StartX, StartY]]  // pushing pixel data of starting pixel onto stack
+        var startPixelColor = ctx.getImageData(StartX, StartY, 1, 1).data; // returns array [r, g, b, a]
+        var fillColor = hexToRGBList(curColor.value); // returns color in [R, G, B]
+        var imageArray = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data; // gets 1-D array of canvas
 
-    while (pixelStack.length) {
-        let newPos = pixelStack.pop();
-        let x = newPos[0];
-        let y = newPos[1];
+        var pixelStack = [[StartX, StartY]];  // pushing pixel data of starting pixel onto stack
+        
+        //console.log(StartX, StartY, startPixelColor, fillColor, pixelStack);
+        //*
+        while (pixelStack.length > 0) {
+            console.log(pixelStack.length);
+            let newPixel = pixelStack.pop();
+            let x = newPixel[0];
+            let y = newPixel[1];
 
-        // Will add code 
+            newPixelIdx = (CANVAS_WIDTH * y + x) * 4;
+            while (y > 0 && matchStartColor(startPixelColor, newPixelIdx)) {
+                newPixelIdx -= CANVAS_WIDTH * 4;
+                y--;
+            }
 
-    }
+            stackedLeft = false;
+            stackedRight = false;
 
-    // Helper functions for doFloodFill
+            while (y < CANVAS_HEIGHT && matchStartColor(startPixelColor, newPixelIdx)) {
+                // 'flood filling' a pixel
+                colorPixel(fillColor, newPixelIdx);
+                
+                // looking at pixels on left 
+                if (x > 0) {  
+                    if (matchStartColor(startPixelColor, newPixelIdx - 4)) {
+                        if (!stackedLeft) {
+                            pixelStack.push([x-1, y]);
+                            stackedLeft = true;
+                        }
+                    }
+                    else if (stackedLeft) {
+                        stackedLeft = false;
+                    }
+                }
+                
+                // looking at pixel on right
+                if (x < CANVAS_WIDTH - 1) {
+                    if (matchStartColor(startPixelColor, newPixelIdx + 4)) {
+                        if (!stackedRight) {
+                            pixelStack.push([x+1, y]);
+                            stackedRight = true;
+                        }
+                    }
+                    else if (stackedRight) {
+                        stackedRight = false;
+                    }
+                }
+                
+                // moving one pixel down
+                newPixelIdx += CANVAS_WIDTH * 4;
+                y++;
+            }
 
-    function matchStartColor(startPixelColor, pixelPos) {
-        var r = img.data[pixelPos + 0];
-        var g = img.data[pixelPos + 1];
-        var b = img.data[pixelPos + 2];
-        return (startPixelColor[0] == r && startPixelColor[1] == g && startPixelColor[2] == b);
-    }
+        }
+
+        // update and send canvas
+        let newImageData = new ImageData(imageArray, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ctx.putImageData(newImageData, 0, 0);
+        sendCanvas();
+        
+        // Helper functions for doFloodFill
+        function matchStartColor(startPixelColor, newPixelIdx) {
+            var r = imageArray[newPixelIdx + 0];
+            var g = imageArray[newPixelIdx + 1];
+            var b = imageArray[newPixelIdx + 2];
+            return (startPixelColor[0] == r && startPixelColor[1] == g && startPixelColor[2] == b);
+        }
+
+        function colorPixel(fillColor, newPixelIdx) {
+            imageArray[newPixelIdx + 0] = fillColor[0];
+            imageArray[newPixelIdx + 1] = fillColor[1];
+            imageArray[newPixelIdx + 2] = fillColor[2];
+            imageArray[newPixelIdx + 3] = 255;
+        }
+        //*/
+        function hexToRGBList(hex) {
+            rgbList = [];
+            for (i = 1; i < 6; i += 2) {
+                channel = hex.substr(i, 2);
+                rgbList.push(parseInt(channel, 16));
+            }
+            return rgbList
+        }
+    }  
 }
-

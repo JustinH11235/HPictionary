@@ -1,2 +1,2 @@
 # HPictionary
-Online pictionary fun for all the HPsters.
+Online pictionary game made for and themed around the Georgia Tech Honors Program LLC.
